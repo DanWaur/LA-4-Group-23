@@ -1,13 +1,13 @@
 /*
  * Juan Rogel Acedo (jarogelacedo)
- * Name (netid)
- * Name (netid)
+ * Daniel (netid)
+ * Marco (netid)
  * Devin Dinh (devdinh)
  */
 
 import java.util.Random;
 
-// Flyweight implementation of Dice t
+// Flyweight implementation of Dice
 public class Dice {
     private DiceValue face;
     private Random rand;

@@ -1,7 +1,7 @@
 /*
  * Juan Rogel Acedo (jarogelacedo)
- * Name (netid)
- * Name (netid)
+ * Daniel (netid)
+ * Marco (netid)
  * Devin Dinh (devdinh)
  */
 
