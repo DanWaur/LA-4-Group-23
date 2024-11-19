@@ -1,3 +1,4 @@
+package model;
 /*
  * Juan Rogel Acedo (jarogelacedo)
  * Name (netid)
@@ -158,7 +159,7 @@ public class Scorecard {
         int sum = 0;
         for (int val : diceValues) {
             if (val == toSum) {
-                sum++;
+                sum += val;
             }
         }
         return sum;
@@ -237,8 +238,8 @@ public class Scorecard {
         int consecutive = 0;
 
         // check if there are k consecutive numbers
-        for (int i = 0; i < sortedVals.size(); i++) {
-            if (sortedVals.get(i) == (sortedVals.get(i-1) + 1)) {
+        for (int i = 0; i < sortedVals.size() - 1; i++) {
+            if (sortedVals.get(i) == (sortedVals.get(i+1) + 1)) {
                 consecutive++;
             } else {
                 consecutive = 0;
