@@ -1,7 +1,7 @@
 /*
  * Juan Rogel Acedo (jarogelacedo)
  * Daniel (netid)
- * Marco (netid)
+ * Marco (pena8@arizona.edu)
  * Devin Dinh (devdinh)
  */
 
