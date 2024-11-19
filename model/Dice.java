@@ -7,7 +7,7 @@
 
 import java.util.Random;
 
-// Flyweight implementation of Dice
+// Flyweight implementation of Dice t
 public class Dice {
     private DiceValue face;
     private Random rand;
