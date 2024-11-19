@@ -11,6 +11,7 @@ import java.util.Random;
 public class Dice {
     private DiceValue face;
     private Random rand;
+    private boolean isHeld;
     
     // private constructor
     private Dice(DiceValue face) {
@@ -33,12 +34,18 @@ public class Dice {
     }
     
     public void roll() {
-        int randRoll = rand.nextInt(7);
-        this.face = DiceValue.values()[randRoll];
+        if (isHeld == false) {
+            int randRoll = rand.nextInt(7);
+            this.face = DiceValue.values()[randRoll];
+        }
     }
 
     public DiceValue getFace() {
         return this.face;
+    }
+
+    public void toggleHold() {
+        isHeld = !isHeld;
     }
     
 }
