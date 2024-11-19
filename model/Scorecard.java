@@ -234,21 +234,22 @@ public class Scorecard {
         for (int val : diceValues) {
             sortedVals.add(val);
         }
+
         Collections.sort(sortedVals);
-        int consecutive = 0;
+        int consecutive = 1;
 
         // check if there are k consecutive numbers
-        for (int i = 0; i < sortedVals.size() - 1; i++) {
-            if (sortedVals.get(i) == (sortedVals.get(i+1) + 1)) {
+        for (int i = 1; i < sortedVals.size(); i++) {
+            if (sortedVals.get(i) - sortedVals.get(i-1) == 1) {
                 consecutive++;
-            } else {
-                consecutive = 0;
+            }
+            else {
+                consecutive = 1;
             }
             if (consecutive == k) {
                 return true;
             }
         }
-
         return false;
     }
 }
