@@ -16,25 +16,29 @@ public class Dice{
         this.isHeld = false;
     }
 
+    /**
+     * Rolls the dice
+     * @post the value of the dice is set to a random number between 1 and 6 inclusive
+     */
     public void roll(){
         this.value = random.nextInt(6) + 1;
     }
 
-    /*
+    /**
      * @return the value of the dice
      */
     public int getValue(){
         return this.value;
     }
 
-    /*
+    /**
      * @return true if the dice is held, false otherwise
      */
     public boolean isHeld(){
         return this.isHeld;
     }   
 
-    /*
+    /**
      * @param hold true if the dice is held, false otherwise
      */
     public void setHeld(boolean hold){
