@@ -1,44 +1,48 @@
+package model;
 /*
  * Juan Rogel Acedo (jarogelacedo)
- * Daniel (netid)
- * Marco (pena8)
- * Devin Dinh (devdinh)
+ * Name (netid)
+ * Name (netid)
+ * Name (netid)
  */
-
 import java.util.Random;
 
-// Flyweight implementation of Dice
-public class Dice {
-    private DiceValue face;
-    private Random rand;
+public class Dice{
+    private int value;
+    private boolean isHeld;
+    private static final Random random = new Random();
     
-    // private constructor
-    private Dice(DiceValue face) {
-        this.face = face;
+    public Dice(){
+        this.value = 1;
+        this.isHeld = false;
     }
 
-    // static store
-    private static Dice[] diceArr = new Dice[5];
-    
-    static {
-        for (int i = 0; i < diceArr.length; i++) {
-            diceArr[i] = new Dice(DiceValue.values()[i]);
-        }
+    /**
+     * Rolls the dice
+     * @post the value of the dice is set to a random number between 1 and 6 inclusive
+     */
+    public void roll(){
+        this.value = random.nextInt(6) + 1;
     }
 
-    // static access method
-    public static Dice get(int dicePos) {
-        assert dicePos > 0 && dicePos < 6;
-        return diceArr[dicePos];
-    }
-    
-    public void roll() {
-        int randRoll = rand.nextInt(7);
-        this.face = DiceValue.values()[randRoll];
+    /**
+     * @return the value of the dice
+     */
+    public int getValue(){
+        return this.value;
     }
 
-    public DiceValue getFace() {
-        return this.face;
+    /**
+     * @return true if the dice is held, false otherwise
+     */
+    public boolean isHeld(){
+        return this.isHeld;
+    }   
+
+    /**
+     * @param hold true if the dice is held, false otherwise
+     */
+    public void setHeld(boolean hold){
+        this.isHeld = hold;
     }
-    
 }
