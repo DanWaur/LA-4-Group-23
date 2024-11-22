@@ -1,3 +1,4 @@
+package model;
 /*
  * Juan Rogel Acedo (jarogelacedo)
  * Daniel (netid)

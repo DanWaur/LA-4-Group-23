@@ -1,7 +1,8 @@
+package model;
 /*
  * Juan Rogel Acedo (jarogelacedo)
  * Daniel (netid)
- * Marco (netid)
+ * Marco (pena8)
  * Devin Dinh (devdinh)
  */
 
@@ -46,6 +47,10 @@ public class Dice {
 
     public void toggleHold() {
         isHeld = !isHeld;
+    }
+
+    public boolean isHeld() {
+        return isHeld; 
     }
     
 }

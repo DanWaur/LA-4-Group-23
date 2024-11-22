@@ -1,8 +1,13 @@
+package tests;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import model.ScoreCategory;
+import model.Scorecard;
 
 
 public class testYahtzee {
