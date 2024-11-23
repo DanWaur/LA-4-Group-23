@@ -39,7 +39,7 @@ public class Player {
         }
         return false; // no rolls left
     }
-    
+
     /**
      * Toggles the hold state of the specified dice.
      * @param dicePos - a list of indices representing the dice to toggle.
@@ -69,7 +69,7 @@ public class Player {
     private int[] getDiceValues() {
         int[] values = new int[dice.size()];
         for (int i = 0; i < dice.size(); i++) {
-            values[i] = dice.get(i).getFace().ordinal() + 1; // Convert DiceValue to 1-6
+            values[i] = dice.get(i).getFaceVal(); // Convert DiceValue to 1-6
         }
         return values;
     }
@@ -84,12 +84,12 @@ public class Player {
         // Reset the dice: unhold all dice
         for (Dice die : dice) {
             if (die.isHeld()) {
-                die.toggleHold(); // Ensure all dice are unheld
+                die.setHold(false); // Ensure all dice are unheld
             }
         }
 
         // Reset the scorecard
-        scoreCard = new Scorecard(); 
+        scoreCard = new Scorecard();
     }
 
     /**
@@ -124,7 +124,7 @@ public class Player {
         }
         return holdStates;
     }
-    
+
     /**
      * Retrieves the score for a specified category.
      * @param category - the score category to retrieve.

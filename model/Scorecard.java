@@ -17,9 +17,9 @@ public class Scorecard {
 
     private boolean yahtzeeScored; // for yahtzee bonus eligibility
     private int yahtzeeBonusCount; // for additional yahtzee bonuses
-    
+
     public Scorecard() {
-        scores = new HashMap<ScoreCategory, Integer>();
+        scores = new HashMap<>();
 
         // initialize all scores to null (no score)
         for (ScoreCategory sc : ScoreCategory.values()) {
@@ -68,7 +68,7 @@ public class Scorecard {
             if (sc == ScoreCategory.THREE_OF_A_KIND && total >= 63) {
                 total += 35;
             }
-            
+
             if (scores.get(sc) != null){
                 total += scores.get(sc);
             }
@@ -144,11 +144,11 @@ public class Scorecard {
                 else { return 0; }
             case CHANCE:
                 return sumOfAllDice(diceValues);
-                                
+
             default: return 0;
-        }   
+        }
     }
-                    
+
     /**
      * Sums the dice values according to the toSum parameter
      * @param diceValues - an array of dice values
@@ -178,8 +178,8 @@ public class Scorecard {
         }
 
         // check if the frequencies array contains k equal values
-        for (int i = 0; i < frequencies.length; i++) {
-            if (frequencies[i] == k) {
+        for (int element : frequencies) {
+            if (element == k) {
                 return true;
             }
         }
@@ -212,11 +212,11 @@ public class Scorecard {
 
         boolean hasThree =false;
         boolean hasTwo = false;
-        for (int i = 0; i < frequencies.length; i++) {
-            if (frequencies[i] == 3) {
+        for (int element : frequencies) {
+            if (element == 3) {
                 hasThree = true;
             }
-            if (frequencies[i] == 2) {
+            if (element == 2) {
                 hasTwo = true;
             }
         }
