@@ -48,13 +48,12 @@ public class YahtzeeGame {
      * @return true if the score was recorded successfully, false if the category was already scored.
      */
     public boolean chooseScore(ScoreCategory scoreChoice) {
-        Player currentPlayer = getCurrentPlayer();
-        if (currentPlayer.getScoreForCategory(scoreChoice) != null) {
-            return false; // category already scored
+        Player currentPlayer = getCurrentPlayer(); 
+        if (currentPlayer.chooseScore(scoreChoice)) {
+            advanceTurn(); // move to the next player (or round)
+            return true; // scored successfully
         }
-        currentPlayer.chooseScore(scoreChoice); // score the category
-        advanceTurn(); // move to the next player (or round)
-        return true;
+        return false; // category already scored
     }
 
 
@@ -95,6 +94,9 @@ public class YahtzeeGame {
      * @return a list of players with the highest scores.
      */
     public List<Player> getWinners() {
+        if (!isGameOver()) {
+            return null; // game hasn't ended yet
+        }
         List<Integer> finalScores = new ArrayList<>();
         for (Player player : players) {
             finalScores.add(player.getTotalScore());

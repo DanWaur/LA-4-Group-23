@@ -57,10 +57,11 @@ public class Player {
      * Scores a specified category using the current dice values.
      * Assumes the GUI prevents selecting already-scored categories.
      * @param scoreChoice - the category to score.
+     * @return true if scored successfully, false otherwise
      */
-    public void chooseScore(ScoreCategory scoreChoice) {
+    public boolean chooseScore(ScoreCategory scoreChoice) {
         int[] diceValues = getDiceValues();
-        scoreCard.score(scoreChoice, diceValues); // Perform the scoring
+        return scoreCard.score(scoreChoice, diceValues); // Perform the scoring
     }
     /**
      * Converts the current dice values into an array of integers.
