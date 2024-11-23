@@ -253,7 +253,21 @@ public class Scorecard {
         return false;
     }
 
+    // TODO: we probably don't need this, everything with the scores is already handled by methods
     public Map<ScoreCategory, Integer> getScores() {
         return scores;
+    }
+
+    /**
+     * @return - a list of all the categories that have not been scored
+     */
+    public ArrayList<ScoreCategory> getAvailableCategories() {
+        ArrayList<ScoreCategory> availableCategories = new ArrayList<>();
+        for (ScoreCategory sc : ScoreCategory.values()) {
+            if (scores.get(sc) == null) {
+                availableCategories.add(sc);
+            }
+        }
+        return availableCategories;
     }
 }

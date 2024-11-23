@@ -93,6 +93,21 @@ public class Player {
     }
 
     /**
+     * Resets the player's game state for a new turn, including rolls left and dice hold states
+     */
+    public void resetTurn() {
+        // Reset the rolls left for the player
+         rollsLeft = MAX_ROLLS;
+ 
+         // Reset the dice: unhold all dice
+         for (Dice die : dice) {
+             if (die.isHeld()) {
+                 die.setHold(false); // Ensure all dice are unheld
+             }
+         }
+     }
+
+    /**
      * Gets the number of rolls remaining for the player.
      * for GUI purposes to be able to display it.
      * @return the number of rolls left.
