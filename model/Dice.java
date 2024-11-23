@@ -1,3 +1,4 @@
+package model;
 /*
  * Juan Rogel Acedo (jarogelacedo)
  * Daniel (netid)
@@ -9,7 +10,7 @@ import java.util.Random;
 
 // Flyweight implementation of Dice
 public class Dice {
-    private DiceValue face;
+    private DiceValue face = ;
     private Random rand;
     private boolean isHeld = false;
     
