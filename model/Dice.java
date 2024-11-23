@@ -1,48 +1,68 @@
 package model;
 /*
  * Juan Rogel Acedo (jarogelacedo)
- * Name (netid)
- * Name (netid)
- * Name (netid)
+ * Daniel (netid)
+ * Marco (pena8)
+ * Devin Dinh (devdinh)
  */
+
+import java.util.ArrayList;
 import java.util.Random;
 
-public class Dice{
-    private int value;
-    private boolean isHeld;
-    private static final Random random = new Random();
-    
-    public Dice(){
-        this.value = 1;
-        this.isHeld = false;
+// Flyweight implementation of Dice
+public class Dice {
+    private DiceValue face;
+    private Random rand = new Random();
+    private boolean isHeld = false;
+
+    // private constructor
+    private Dice(DiceValue face) {
+        this.face = face;
     }
 
-    /**
-     * Rolls the dice
-     * @post the value of the dice is set to a random number between 1 and 6 inclusive
-     */
-    public void roll(){
-        this.value = random.nextInt(6) + 1;
+    // static store
+    private static ArrayList<Dice> diceArr = new ArrayList<Dice>();
+
+    static {
+        for (int i = 0; i < 5; i++) {
+        	Dice newDice = new Dice(DiceValue.values()[i]);
+        	diceArr.add(i, newDice);
+        }
     }
 
-    /**
-     * @return the value of the dice
-     */
-    public int getValue(){
-        return this.value;
+    // static access method
+    public static Dice get(int dicePos) {
+        assert dicePos > 0 && dicePos < 6;
+        ArrayList<Dice> diceArrCopy = new ArrayList<Dice>(diceArr);
+        return diceArrCopy.get(dicePos - 1);
     }
 
-    /**
-     * @return true if the dice is held, false otherwise
-     */
-    public boolean isHeld(){
-        return this.isHeld;
-    }   
-
-    /**
-     * @param hold true if the dice is held, false otherwise
-     */
-    public void setHeld(boolean hold){
-        this.isHeld = hold;
+    // general functionality methods
+    public void roll() {
+        if (!isHeld) {
+            int randRoll = rand.nextInt(6);
+            this.face = DiceValue.values()[randRoll];
+        }
     }
+
+    public DiceValue getFace() {
+    	return this.face;
+    }
+
+    public int getFaceVal() {
+        return this.face.getVal();
+    }
+
+    public void toggleHold() {
+    	isHeld = !isHeld;
+    }
+
+    public void setHold(boolean hold) {
+        isHeld = hold;
+    }
+
+    public boolean isHeld() {
+        return isHeld;
+    }
+
 }
