@@ -1,7 +1,8 @@
+package model;
 /*
  * Juan Rogel Acedo (jarogelacedo)
  * Daniel (netid)
- * Marco (netid)
+ * Marco (pena8)
  * Devin Dinh (devdinh)
  */
 

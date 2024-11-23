@@ -252,4 +252,8 @@ public class Scorecard {
         }
         return false;
     }
+
+    public Map<ScoreCategory, Integer> getScores() {
+        return scores;
+    }
 }
