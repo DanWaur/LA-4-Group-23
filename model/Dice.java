@@ -10,9 +10,9 @@ import java.util.Random;
 
 // Flyweight implementation of Dice
 public class Dice {
-    private DiceValue face;
+    private DiceValue face = ;
     private Random rand;
-    private boolean isHeld;
+    private boolean isHeld = false;
     
     // private constructor
     private Dice(DiceValue face) {
@@ -30,13 +30,14 @@ public class Dice {
 
     // static access method
     public static Dice get(int dicePos) {
-        assert dicePos > 0 && dicePos < 6;
-        return diceArr[dicePos];
+        assert dicePos >= 1 && dicePos <= 6;
+        return diceArr[dicePos - 1];
     }
     
+    // general functionality methods
     public void roll() {
         if (isHeld == false) {
-            int randRoll = rand.nextInt(7);
+            int randRoll = rand.nextInt(6);
             this.face = DiceValue.values()[randRoll];
         }
     }
@@ -45,8 +46,12 @@ public class Dice {
         return this.face;
     }
 
-    public void toggleHold() {
-        isHeld = !isHeld;
+    public void setHold(boolean hold) {
+        isHeld = hold;
+    }
+
+    public boolean getHold() {
+        return this.isHeld;
     }
 
     public boolean isHeld() {
