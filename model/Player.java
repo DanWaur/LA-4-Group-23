@@ -146,8 +146,8 @@ public class Player {
      * @param category - the score category to retrieve.
      * @return the score for the specified category, or null if it hasn't been scored.
      */
-    public Integer getScoreForCategory(ScoreCategory category) {
-        return scoreCard.getScores().get(category);
+    public int getScoreForCategory(ScoreCategory category) {
+        return scoreCard.getScoreForCategory(category);
     }
 
     /**

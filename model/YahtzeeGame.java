@@ -94,17 +94,17 @@ public class YahtzeeGame {
      * @return a list of players with the highest scores.
      */
     public List<Player> getWinners() {
+        // could still have only one winner, but ties are possible so we use a list
+        List<Player> winners = new ArrayList<>();
         if (!isGameOver()) {
-            return null; // game hasn't ended yet
+            return winners; // game hasn't ended yet, empty list
         }
         List<Integer> finalScores = new ArrayList<>();
         for (Player player : players) {
             finalScores.add(player.getTotalScore());
         }
-        int highestScore = Collections.max(finalScores);
 
-        // could still have only one winner, but ties are possible so we use a list
-        List<Player> winners = new ArrayList<>(); 
+        int highestScore = Collections.max(finalScores);
         for (Player player : players) {
             if (player.getTotalScore() == highestScore) {
                 winners.add(player);
@@ -118,6 +118,15 @@ public class YahtzeeGame {
      */
     public int getCurrentRound() {
         return currentRound;
+    }
+
+    /**
+     * Returns the score of the specified player.
+     * @param playerIndex - the index of the player to retrieve the score for.
+     * @return the score of the specified player.
+     */
+    public int getPlayerScore(int playerIndex) {
+        return players.get(playerIndex).getTotalScore();
     }
 }
 

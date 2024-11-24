@@ -9,6 +9,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Scorecard {
@@ -253,15 +254,20 @@ public class Scorecard {
         return false;
     }
 
-    // TODO: we probably don't need this, everything with the scores is already handled by methods
-    public Map<ScoreCategory, Integer> getScores() {
-        return scores;
+    /**
+     * returns the score for a given category, null if it hasn't been scored
+     * @param category - the category to retrieve the score for
+     * @return the score for the given category, or null if it hasn't been scored
+     * // NOTEL: no need to return the whole map, just the score for the given category passed in
+     */
+    public int getScoreForCategory(ScoreCategory category) {
+        return scores.get(category);
     }
 
     /**
      * @return - a list of all the categories that have not been scored
      */
-    public ArrayList<ScoreCategory> getAvailableCategories() {
+    public List<ScoreCategory> getAvailableCategories() {
         ArrayList<ScoreCategory> availableCategories = new ArrayList<>();
         for (ScoreCategory sc : ScoreCategory.values()) {
             if (scores.get(sc) == null) {
