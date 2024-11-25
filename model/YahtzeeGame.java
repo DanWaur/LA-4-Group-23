@@ -99,6 +99,7 @@ public class YahtzeeGame {
         if (!isGameOver()) {
             return winners; // game hasn't ended yet, empty list
         }
+        // TODO: copy of players to avoid escaping references, in Player class
         List<Integer> finalScores = new ArrayList<>();
         for (Player player : players) {
             finalScores.add(player.getTotalScore());
@@ -123,6 +124,7 @@ public class YahtzeeGame {
     /**
      * Returns the score of the specified player.
      * @param playerIndex - the index of the player to retrieve the score for.
+     * @pre playerIndex >= 0 && playerIndex < players.size()
      * @return the score of the specified player.
      */
     public int getPlayerScore(int playerIndex) {
