@@ -9,20 +9,31 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player {
+public class Player implements Comparable<Player> {
+    private String name;
     private static final int MAX_ROLLS = 3;
     private static final int NUM_DICE = 5;
     private List<Dice> dice;
     private int rollsLeft;
     private Scorecard scoreCard;
 
-    public Player() {
+    public Player(String name) {
+        this.name = name;
         dice = new ArrayList<>();
+        rollsLeft = MAX_ROLLS;
         for (int i = 0; i < NUM_DICE; i++) {
             dice.add(Dice.get(i));
         }
         scoreCard = new Scorecard();
         resetGame();
+    }
+
+    /**
+     * returns the name of the player
+     * @return - the name of the player
+     */
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -156,6 +167,16 @@ public class Player {
      */
     public int getTotalScore() {
         return scoreCard.getTotalScore();
+    }
+
+    /**
+     * Compares this player to another based on the total score.
+     * @param other - the player to compare to
+     * @return - a negative integer, zero, or a positive integer as this player's score 
+     * is less than, equal to, or greater than the other player's score.
+     */
+    public int compareTo(Player other) {
+        return this.getTotalScore() - other.getTotalScore();
     }
 
 }

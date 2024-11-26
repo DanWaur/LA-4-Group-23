@@ -2,7 +2,9 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class YahtzeeGame {
 
@@ -18,8 +20,10 @@ public class YahtzeeGame {
      */
     public YahtzeeGame(int numPlayers) {
         players = new ArrayList<>();
+        String playerName = "";
         for (int i = 0; i < numPlayers; i++) {
-            players.add(new Player());
+            playerName = "Player " + (i + 1);
+            players.add(new Player(playerName));
             // TODO decide how CPU players should be initialized
         }
         currentPlayerIndex = 0;
@@ -90,28 +94,22 @@ public class YahtzeeGame {
     }
 
     /**
-     * Retrieves the winner(s) of the game based on the total scores.
-     * @return a list of players with the highest scores.
+     * Retrieves the Players in this game and their scores, sorted by score in descending order.
+     * @return a map of the players' scores mapped to their names.
      */
-    public List<Player> getWinners() {
-        // could still have only one winner, but ties are possible so we use a list
-        List<Player> winners = new ArrayList<>();
-        if (!isGameOver()) {
-            return winners; // game hasn't ended yet, empty list
-        }
-        // TODO: copy of players to avoid escaping references, in Player class
-        List<Integer> finalScores = new ArrayList<>();
-        for (Player player : players) {
-            finalScores.add(player.getTotalScore());
+    public Map<String, Integer> getPlayerScores() {
+        Map<String, Integer> playerScores = new HashMap<>();
+
+        // sort in descending order by scores
+        List<Player> playersCopy = new ArrayList<>(players);
+        Collections.sort(playersCopy, Collections.reverseOrder());
+
+        // map scores to names
+        for (Player player : playersCopy) {
+            playerScores.put(player.getName(), player.getTotalScore());
         }
 
-        int highestScore = Collections.max(finalScores);
-        for (Player player : players) {
-            if (player.getTotalScore() == highestScore) {
-                winners.add(player);
-            }
-        }
-        return winners;
+        return playerScores;
     }
 
     /**
