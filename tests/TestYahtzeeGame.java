@@ -2,6 +2,8 @@ package tests;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,7 +22,7 @@ public class TestYahtzeeGame {
     @Test
     public void testGameInitialization() {
         assertEquals(1, game.getCurrentRound());
-        assertTrue(game.getWinners().isEmpty());
+        assertFalse(game.isGameOver());
     }
 
     @Test
@@ -93,14 +95,17 @@ public class TestYahtzeeGame {
     }
     
     @Test
-    public void testGetWinners() {
+    public void testGetPlayerScores() {
     	for (ScoreCategory sc : ScoreCategory.values()) {
     		// score all categories for both players
     		game.chooseScore(sc);
     		game.chooseScore(sc);
     	}
-    	// tie since tests did not make anyone roll, same score in all
-    	assertEquals(2, game.getWinners().size());
+    	
+    	Map<String, Integer> playerScores = game.getPlayerScores();
+    	assertEquals(2, playerScores.size());
+    	assertTrue(playerScores.containsKey("Player 1"));
+    	assertTrue(playerScores.containsKey("Player 1"));
     }
     
     @Test
