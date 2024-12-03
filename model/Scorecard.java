@@ -258,7 +258,7 @@ public class Scorecard {
      * returns the score for a given category, null if it hasn't been scored
      * @param category - the category to retrieve the score for
      * @return the score for the given category, or null if it hasn't been scored
-     * // NOTEL: no need to return the whole map, just the score for the given category passed in
+     * // NOTE: no need to return the whole map, just the score for the given category passed in
      */
     public int getScoreForCategory(ScoreCategory category) {
         return scores.get(category);

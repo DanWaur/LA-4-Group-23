@@ -105,7 +105,7 @@ public class TestYahtzeeGame {
     	Map<String, Integer> playerScores = game.getPlayerScores();
     	assertEquals(2, playerScores.size());
     	assertTrue(playerScores.containsKey("Player 1"));
-    	assertTrue(playerScores.containsKey("Player 1"));
+    	assertTrue(playerScores.containsKey("Player 2"));
     }
     
     @Test

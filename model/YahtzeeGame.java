@@ -1,5 +1,12 @@
 package model;
 
+/*
+ * Juan Rogel Acedo (jarogelacedo)
+ * Daniel (netid)
+ * Marco (pena8)
+ * Devin Dinh (devdinh)
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -128,5 +135,7 @@ public class YahtzeeGame {
     public int getPlayerScore(int playerIndex) {
         return players.get(playerIndex).getTotalScore();
     }
+    
+    // TODO possible currentPlayerisCPU method
 }
 
