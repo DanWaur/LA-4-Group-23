@@ -16,7 +16,8 @@ import model.YahtzeeGame;
 
 public class TestYahtzeeGame {
     
-    YahtzeeGame game = new YahtzeeGame(2);
+    // No CPU
+    YahtzeeGame game = new YahtzeeGame(2, false);
 
 
     @Test
@@ -63,7 +64,7 @@ public class TestYahtzeeGame {
     }
     
     @Test
-    public void tesAdvanceTurn() {
+    public void testAdvanceTurn() {
     	int currentRound = game.getCurrentRound();
         
     	// both turns
@@ -116,6 +117,42 @@ public class TestYahtzeeGame {
     	assertTrue(game.getPlayerScore(0) > 0);
     }
     
+    // Against CPU
+    YahtzeeGame gameCpu = new YahtzeeGame(2, true);
+
+    @Test
+    public void testGameInitializationCpu() {
+        assertEquals(1, gameCpu.getCurrentRound());
+        assertFalse(gameCpu.isGameOver());
+        assertFalse(gameCpu.isCurrentPlayerCPU());
+        gameCpu.chooseScore(ScoreCategory.SMALL_STRAIGHT);
+        assertTrue(gameCpu.isCurrentPlayerCPU());
+    }
+    
+    @Test
+    public void testSimulateTurn() {
+    	gameCpu.rollDice();
+    	gameCpu.rollDice();
+    	
+    	gameCpu.chooseScore(ScoreCategory.FIVES);
+    	
+    	// player turn over, now CPU
+    	assertTrue(gameCpu.chooseScore(null));
+    	assertEquals(2, gameCpu.getCurrentRound());
+    }
+    
+    @Test
+    public void simulateGame() {
+    	// all rounds, all categories
+    	for (ScoreCategory sc : ScoreCategory.values()) {
+    		gameCpu.rollDice();
+    		gameCpu.chooseScore(sc); // player
+    		gameCpu.chooseScore(null); //CPU
+    	}
+
+    	assertTrue(gameCpu.isGameOver());
+    	assertEquals(2, gameCpu.getPlayerScores().size());
+    }
     
 }
 
