@@ -296,4 +296,23 @@ public class TestScorecard {
     	assertEquals(365, scorecard.getTotalScore());
     }
 
+    @Test
+    public void testGetAvailableCategories_All() {
+        assertEquals(ScoreCategory.values().length, scorecard.getAvailableCategories().size());
+    }
+
+    @Test
+    public void testGetAvailableCategories_NotAll() {
+        diceValues[0] = 1;
+    	diceValues[1] = 1;
+    	diceValues[2] = 1;
+    	diceValues[3] = 1;
+    	diceValues[4] = 1;
+    	
+    	scorecard.score(ScoreCategory.ONES, diceValues);
+
+        assertFalse(scorecard.getAvailableCategories().contains(ScoreCategory.ONES));
+        
+    }
+
 }

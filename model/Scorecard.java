@@ -9,6 +9,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Scorecard {
@@ -90,7 +91,7 @@ public class Scorecard {
     }
 
 
-    // HELPER METHODS BEGIN HERE
+    
 
     /**
      * Calculates the score for a given category
@@ -98,7 +99,7 @@ public class Scorecard {
      * @param diceValues - an array of dice values
      * @return - the score for the given category
      */
-    private int calculateScoreForCategory(ScoreCategory category, int[] diceValues) {
+    public int calculateScoreForCategory(ScoreCategory category, int[] diceValues) {
         switch (category) {
             case ONES:
                 return sumOfDice(diceValues, 1);
@@ -148,6 +149,8 @@ public class Scorecard {
             default: return 0;
         }
     }
+    
+    // HELPER METHODS BEGIN HERE
 
     /**
      * Sums the dice values according to the toSum parameter
@@ -253,7 +256,26 @@ public class Scorecard {
         return false;
     }
 
-    public Map<ScoreCategory, Integer> getScores() {
-        return scores;
+    /**
+     * returns the score for a given category, null if it hasn't been scored
+     * @param category - the category to retrieve the score for
+     * @return the score for the given category, or null if it hasn't been scored
+     * // NOTE: no need to return the whole map, just the score for the given category passed in
+     */
+    public Integer getScoreForCategory(ScoreCategory category) {
+        return scores.get(category);
+    }
+
+    /**
+     * @return - a list of all the categories that have not been scored
+     */
+    public List<ScoreCategory> getAvailableCategories() {
+        ArrayList<ScoreCategory> availableCategories = new ArrayList<>();
+        for (ScoreCategory sc : ScoreCategory.values()) {
+            if (scores.get(sc) == null) {
+                availableCategories.add(sc);
+            }
+        }
+        return availableCategories;
     }
 }
