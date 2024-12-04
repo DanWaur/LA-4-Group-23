@@ -91,15 +91,13 @@ public class Scorecard {
     }
 
 
-    // HELPER METHODS BEGIN HERE
-
     /**
      * Calculates the score for a given category
      * @param category - the category to calculate the score for
      * @param diceValues - an array of dice values
      * @return - the score for the given category
      */
-    private int calculateScoreForCategory(ScoreCategory category, int[] diceValues) {
+    public int calculateScoreForCategory(ScoreCategory category, int[] diceValues) {
         switch (category) {
             case ONES:
                 return sumOfDice(diceValues, 1);
@@ -149,6 +147,8 @@ public class Scorecard {
             default: return 0;
         }
     }
+    
+    // HELPER METHODS BEGIN HERE
 
     /**
      * Sums the dice values according to the toSum parameter
@@ -260,7 +260,7 @@ public class Scorecard {
      * @return the score for the given category, or null if it hasn't been scored
      * // NOTE: no need to return the whole map, just the score for the given category passed in
      */
-    public int getScoreForCategory(ScoreCategory category) {
+    public Integer getScoreForCategory(ScoreCategory category) {
         return scores.get(category);
     }
 
