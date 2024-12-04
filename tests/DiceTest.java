@@ -9,7 +9,7 @@ public class DiceTest {
     @Test
     public void testGetDice() {
     	for (int i = 0; i < 5; i++) {
-    		Dice tempDice = Dice.get(i + 1);
+    		Dice tempDice = Dice.get(i);
     		assertTrue(tempDice.getFaceVal() >= 1);
     		assertTrue(tempDice.getFaceVal() <= 6);
     	}

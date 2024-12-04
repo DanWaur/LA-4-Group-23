@@ -27,14 +27,14 @@ public class Dice {
         /* create exactly 5 dice for the game board */
         for (int i = 0; i < 5; i++) {
         	Dice newDice = new Dice(DiceValue.values()[i]);
-        	diceArr.add(i, newDice);
+        	diceArr.add(newDice);
         }
     }
 
     /*
      * static access method
      * @param dicePos - position of dice in array in the game board
-     * @pre dicePos >= 1 || dicePos <= 5
+     * @pre dicePos >= 0 || dicePos <= 4
      */
     public static Dice get(int dicePos) {
         // fixed index out of bounds error

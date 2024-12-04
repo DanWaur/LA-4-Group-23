@@ -19,12 +19,23 @@ public class Player implements Comparable<Player> {
     private Scorecard scoreCard;
     private boolean hasRolled; // flag
 
+    public Player() {
+        this.name = "Player";
+        dice = new ArrayList<>();
+        rollsLeft = MAX_ROLLS;
+        for (int i = 0; i < NUM_DICE; i++) {
+            dice.add(Dice.get(i+1));
+        }
+        scoreCard = new Scorecard();
+        resetGame();
+    }
+
     public Player(String name) {
         this.name = name;
         dice = new ArrayList<>();
         rollsLeft = MAX_ROLLS;
         for (int i = 0; i < NUM_DICE; i++) {
-            dice.add(Dice.get(i+1));
+            dice.add(Dice.get(i));
         }
         scoreCard = new Scorecard();
         resetGame();
@@ -97,16 +108,6 @@ public class Player implements Comparable<Player> {
             values[i] = dice.get(i).getFaceVal(); // Convert DiceValue to 1-6
         }
         return values;
-    }
-    
-    /**
-     * Calculates score of current dice hand in the ScoreCard under a certain category
-     * @param category - category to calculate
-     * @return Integer representing score
-     */
-    protected int calculateScoreForCategory(ScoreCategory category) {
-    	return scoreCard.calculateScoreForCategory(category, getDiceValues());
-    	
     }
     
     /**

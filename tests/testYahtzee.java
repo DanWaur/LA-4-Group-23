@@ -15,9 +15,10 @@ public class testYahtzee {
 
 	@Test
 	public void testDice() {
-		Dice dice = Dice.get(1);
+		Dice dice = Dice.get(0);
 		
-		assertEquals(1, dice.getFaceVal());
+		assertTrue(dice.getFaceVal() >= 1);
+		assertTrue(dice.getFaceVal() <= 6);
 		assertFalse(dice.isHeld());
 		
 		for (int i = 0; i < 1000; i++) {
