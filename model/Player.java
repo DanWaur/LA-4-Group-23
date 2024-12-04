@@ -8,21 +8,44 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class Player {
+public class Player implements Comparable<Player> {
+    private String name;
     private static final int MAX_ROLLS = 3;
     private static final int NUM_DICE = 5;
     private List<Dice> dice;
     private int rollsLeft;
     private Scorecard scoreCard;
+    private boolean hasRolled; // flag
 
-    public Player() {
+    public Player(String name) {
+        this.name = name;
         dice = new ArrayList<>();
+        rollsLeft = MAX_ROLLS;
         for (int i = 0; i < NUM_DICE; i++) {
-            dice.add(Dice.get(i));
+            dice.add(Dice.get(i+1));
         }
         scoreCard = new Scorecard();
         resetGame();
+    }
+
+    public boolean hasRolled() {
+        return hasRolled;
+    }
+
+    public void setHasRolled(boolean hasRolled) {
+        this.hasRolled = hasRolled;
+    }
+
+
+
+    /**
+     * returns the name of the player
+     * @return - the name of the player
+     */
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -35,6 +58,7 @@ public class Player {
                 die.roll();
             }
             rollsLeft--;
+            hasRolled = true; 
             return true; // successfull roll
         }
         return false; // no rolls left
@@ -57,22 +81,58 @@ public class Player {
      * Scores a specified category using the current dice values.
      * Assumes the GUI prevents selecting already-scored categories.
      * @param scoreChoice - the category to score.
+     * @return true if scored successfully, false otherwise
      */
-    public void chooseScore(ScoreCategory scoreChoice) {
+    public boolean chooseScore(ScoreCategory scoreChoice) {
         int[] diceValues = getDiceValues();
-        scoreCard.score(scoreChoice, diceValues); // Perform the scoring
+        return scoreCard.score(scoreChoice, diceValues); // Perform the scoring
     }
     /**
      * Converts the current dice values into an array of integers.
      * @return an array representing the values of the dice (1-6).
      */
-    private int[] getDiceValues() {
+    public int[] getDiceValues() {
         int[] values = new int[dice.size()];
         for (int i = 0; i < dice.size(); i++) {
             values[i] = dice.get(i).getFaceVal(); // Convert DiceValue to 1-6
         }
         return values;
     }
+    
+    /**
+     * Calculates score of current dice hand in the ScoreCard under a certain category
+     * @param category - category to calculate
+     * @return Integer representing score
+     */
+    protected int calculateScoreForCategory(ScoreCategory category) {
+    	return scoreCard.calculateScoreForCategory(category, getDiceValues());
+    	
+    }
+    
+    /**
+     * Checks if category in the scorecard is scored already
+     * @param category - category to check
+     * @return True if category is scored in scorecard, false otherwise
+     */
+    public boolean isScored(ScoreCategory category) {
+    	return (scoreCard.getScoreForCategory(category) != null);
+    	
+    }
+
+    public void resetRolls() {
+        this.rollsLeft = MAX_ROLLS; 
+    }
+
+    public void resetDice() {
+        // Reset each die to its default state
+        for (Dice die : dice) {
+            die.roll(); // Optionally set a default value, or keep the last rolled value
+            die.setHold(false); // Ensure the die is not held
+        }
+    }
+    
+    
+    
 
     /**
      * Resets the player's game state, including rolls left, dice hold states, and scorecard.
@@ -91,6 +151,21 @@ public class Player {
         // Reset the scorecard
         scoreCard = new Scorecard();
     }
+
+    /**
+     * Resets the player's game state for a new turn, including rolls left and dice hold states
+     */
+    public void resetTurn() {
+        // Reset the rolls left for the player
+         rollsLeft = MAX_ROLLS;
+ 
+         // Reset the dice: unhold all dice
+         for (Dice die : dice) {
+             if (die.isHeld()) {
+                 die.setHold(false); // Ensure all dice are unheld
+             }
+         }
+     }
 
     /**
      * Gets the number of rolls remaining for the player.
@@ -130,8 +205,8 @@ public class Player {
      * @param category - the score category to retrieve.
      * @return the score for the specified category, or null if it hasn't been scored.
      */
-    public Integer getScoreForCategory(ScoreCategory category) {
-        return scoreCard.getScores().get(category);
+    public int getScoreForCategory(ScoreCategory category) {
+        return scoreCard.getScoreForCategory(category);
     }
 
     /**
@@ -141,5 +216,40 @@ public class Player {
     public int getTotalScore() {
         return scoreCard.getTotalScore();
     }
+
+    /**
+     * Compares this player to another based on the total score.
+     * @param other - the player to compare to
+     * @return - a negative integer, zero, or a positive integer as this player's score 
+     * is less than, equal to, or greater than the other player's score.
+     */
+    public int compareTo(Player other) {
+        return this.getTotalScore() - other.getTotalScore();
+    }
+
+    public boolean scoreCategory(ScoreCategory category) {
+        return scoreCard.score(category, getDiceValues());
+    }
+
+    public int calculateScoreForCategory(ScoreCategory category) {
+        return scoreCard.calculateScoreForCategory(category, getDiceValues());
+    }
+
+
+    public void prepareForNextTurn() {
+        resetRolls();
+        resetDice();
+        setHasRolled(false);
+    }
+    
+    public List<String> getDiceFacesAsStrings() {
+        List<String> faces = new ArrayList<>();
+        for (DiceValue face : getDiceFaces()) {
+            faces.add(face.name()); // Convert DiceValue to its string name
+        }
+        return faces;
+    }
+    
+    
 
 }

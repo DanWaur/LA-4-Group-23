@@ -37,9 +37,10 @@ public class Dice {
      * @pre dicePos >= 1 || dicePos <= 5
      */
     public static Dice get(int dicePos) {
-        assert dicePos > 0 && dicePos < 6;
+        // fixed index out of bounds error
+        assert dicePos >= 0 && dicePos <= 4;
         ArrayList<Dice> diceArrCopy = new ArrayList<Dice>(diceArr);
-        return diceArrCopy.get(dicePos - 1);
+        return diceArrCopy.get(dicePos); // no need to decrement 
     }
 
 
