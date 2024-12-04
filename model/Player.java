@@ -24,7 +24,7 @@ public class Player implements Comparable<Player> {
         dice = new ArrayList<>();
         rollsLeft = MAX_ROLLS;
         for (int i = 0; i < NUM_DICE; i++) {
-            dice.add(Dice.get(i+1));
+            dice.add(Dice.get(i));
         }
         scoreCard = new Scorecard();
         resetGame();
@@ -64,7 +64,7 @@ public class Player implements Comparable<Player> {
      * @return true if the dice were rolled successfully, false if no rolls are left.
      */
     public boolean rollDice() {
-        if (rollsLeft > 0) {
+        if (rollsLeft >= 0) {
             for (Dice die : dice) {
                 die.roll();
             }
@@ -206,7 +206,7 @@ public class Player implements Comparable<Player> {
      * @param category - the score category to retrieve.
      * @return the score for the specified category, or null if it hasn't been scored.
      */
-    public int getScoreForCategory(ScoreCategory category) {
+    public Integer getScoreForCategory(ScoreCategory category) {
         return scoreCard.getScoreForCategory(category);
     }
 

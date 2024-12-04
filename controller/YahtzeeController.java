@@ -50,12 +50,12 @@ public class YahtzeeController {
     }
 
     public void handleRollDice() {
-        if (currentPlayer.getRollsLeft() > 0) {
+        if (currentPlayer.getRollsLeft() >= 0) {
             currentPlayer.rollDice();
             currentPlayer.setHasRolled(true);
             gui.updateDiceDisplay(currentPlayer);
 
-            if (currentPlayer.getRollsLeft() == 0) {
+            if (currentPlayer.getRollsLeft() == -1) {
                 gui.showMessage("Rolls finished. Please choose a score.");
             } else {
                 displayPotentialScores();
@@ -81,11 +81,7 @@ public class YahtzeeController {
         int playerColumnIndex = players.indexOf(currentPlayer) + 1; // Column in the scorecard
 
         for (ScoreCategory category : ScoreCategory.values()) {
-            // if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
-            //     int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate the score
-            //     gui.updateScore(category.ordinal() + 1, playerColumnIndex, String.valueOf(potentialScore));
-            // }
-            if (currentPlayer.getScoreForCategory(category) == 0) { // Check if the category is unscored
+            if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
                 int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate the score
                 gui.updateScore(category.ordinal() + 1, playerColumnIndex, String.valueOf(potentialScore));
             }
@@ -96,11 +92,7 @@ public class YahtzeeController {
         List<String> selectableCategories = new ArrayList<>();
 
         for (ScoreCategory category : ScoreCategory.values()) {
-            // if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
-            //     int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate potential score
-            //     selectableCategories.add(category.name() + " (" + potentialScore + ")");
-            // }
-            if (currentPlayer.getScoreForCategory(category) == 0) { // Check if the category is unscored
+            if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
                 int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate potential score
                 selectableCategories.add(category.name() + " (" + potentialScore + ")");
             }
