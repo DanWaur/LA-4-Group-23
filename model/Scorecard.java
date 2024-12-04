@@ -98,7 +98,7 @@ public class Scorecard {
      * @param diceValues - an array of dice values
      * @return - the score for the given category
      */
-    private int calculateScoreForCategory(ScoreCategory category, int[] diceValues) {
+    public int calculateScoreForCategory(ScoreCategory category, int[] diceValues) {
         switch (category) {
             case ONES:
                 return sumOfDice(diceValues, 1);
@@ -254,6 +254,7 @@ public class Scorecard {
     }
 
     public Map<ScoreCategory, Integer> getScores() {
-        return scores;
+        return Collections.unmodifiableMap(scores);
     }
+    
 }
