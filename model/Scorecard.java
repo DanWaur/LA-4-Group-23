@@ -91,8 +91,6 @@ public class Scorecard {
     }
 
 
-    
-
     /**
      * Calculates the score for a given category
      * @param category - the category to calculate the score for
@@ -262,7 +260,7 @@ public class Scorecard {
      * @return the score for the given category, or null if it hasn't been scored
      * // NOTE: no need to return the whole map, just the score for the given category passed in
      */
-    public int getScoreForCategory(ScoreCategory category) {
+    public Integer getScoreForCategory(ScoreCategory category) {
         return scores.get(category);
     }
 

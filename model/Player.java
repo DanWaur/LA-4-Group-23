@@ -8,6 +8,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Player implements Comparable<Player> {
     private String name;
@@ -16,17 +17,28 @@ public class Player implements Comparable<Player> {
     private List<Dice> dice;
     private int rollsLeft;
     private Scorecard scoreCard;
+    private boolean hasRolled; // flag
 
     public Player(String name) {
         this.name = name;
         dice = new ArrayList<>();
         rollsLeft = MAX_ROLLS;
         for (int i = 0; i < NUM_DICE; i++) {
-            dice.add(Dice.get(i));
+            dice.add(Dice.get(i+1));
         }
         scoreCard = new Scorecard();
         resetGame();
     }
+
+    public boolean hasRolled() {
+        return hasRolled;
+    }
+
+    public void setHasRolled(boolean hasRolled) {
+        this.hasRolled = hasRolled;
+    }
+
+
 
     /**
      * returns the name of the player
@@ -46,6 +58,7 @@ public class Player implements Comparable<Player> {
                 die.roll();
             }
             rollsLeft--;
+            hasRolled = true; 
             return true; // successfull roll
         }
         return false; // no rolls left
@@ -78,7 +91,7 @@ public class Player implements Comparable<Player> {
      * Converts the current dice values into an array of integers.
      * @return an array representing the values of the dice (1-6).
      */
-    protected int[] getDiceValues() {
+    public int[] getDiceValues() {
         int[] values = new int[dice.size()];
         for (int i = 0; i < dice.size(); i++) {
             values[i] = dice.get(i).getFaceVal(); // Convert DiceValue to 1-6
@@ -105,6 +118,21 @@ public class Player implements Comparable<Player> {
     	return (scoreCard.getScoreForCategory(category) != null);
     	
     }
+
+    public void resetRolls() {
+        this.rollsLeft = MAX_ROLLS; 
+    }
+
+    public void resetDice() {
+        // Reset each die to its default state
+        for (Dice die : dice) {
+            die.roll(); // Optionally set a default value, or keep the last rolled value
+            die.setHold(false); // Ensure the die is not held
+        }
+    }
+    
+    
+    
 
     /**
      * Resets the player's game state, including rolls left, dice hold states, and scorecard.
@@ -198,5 +226,30 @@ public class Player implements Comparable<Player> {
     public int compareTo(Player other) {
         return this.getTotalScore() - other.getTotalScore();
     }
+
+    public boolean scoreCategory(ScoreCategory category) {
+        return scoreCard.score(category, getDiceValues());
+    }
+
+    public int calculateScoreForCategory(ScoreCategory category) {
+        return scoreCard.calculateScoreForCategory(category, getDiceValues());
+    }
+
+
+    public void prepareForNextTurn() {
+        resetRolls();
+        resetDice();
+        setHasRolled(false);
+    }
+    
+    public List<String> getDiceFacesAsStrings() {
+        List<String> faces = new ArrayList<>();
+        for (DiceValue face : getDiceFaces()) {
+            faces.add(face.name()); // Convert DiceValue to its string name
+        }
+        return faces;
+    }
+    
+    
 
 }
