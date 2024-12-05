@@ -49,7 +49,7 @@ public class YahtzeeGUI {
     }
 
     private JLabel createDiceLabel(String face, boolean isHeld, int index) {
-        String diceImagePath = "resources/dice-" + face + ".png"; // Path to dice image
+        String diceImagePath = "/resources/dice-" + face + ".png"; // Path to dice image
         ImageIcon diceIcon = new ImageIcon(new ImageIcon(diceImagePath).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
         JLabel diceLabel = new JLabel(diceIcon, SwingConstants.CENTER);
         
@@ -150,11 +150,12 @@ public class YahtzeeGUI {
         for (int i = 0; i < diceFaces.size(); i++) {
             JLabel diceLabel;
             if (diceFaces.get(i) == null) {
-                diceLabel = new JLabel(new ImageIcon("resources/placeholder-dice.png"), SwingConstants.CENTER); // Placeholder for unset dice
+                diceLabel = new JLabel(new ImageIcon("resources/dice-ONE.png"), SwingConstants.CENTER); // Placeholder for unset dice
             } else {
                 diceLabel = createDiceLabel(diceFaces.get(i), diceHolds.get(i), i); // Create label for dice
             }
             dicePanel.add(diceLabel);
+            
         }
     
         dicePanel.revalidate(); // Refresh dice panel

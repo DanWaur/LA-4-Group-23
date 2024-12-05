@@ -18,6 +18,17 @@ public class Player implements Comparable<Player> {
     private Scorecard scoreCard;
     private boolean hasRolled; // flag
 
+    public Player() {
+        this.name = "Player";
+        dice = new ArrayList<>();
+        rollsLeft = MAX_ROLLS;
+        for (int i = 0; i < NUM_DICE; i++) {
+            dice.add(Dice.get(i));
+        }
+        scoreCard = new Scorecard();
+        resetGame();
+    }
+
     public Player(String name) {
         this.name = name;
         dice = new ArrayList<>();
@@ -97,15 +108,14 @@ public class Player implements Comparable<Player> {
         }
         return values;
     }
-    
+
     /**
      * Calculates score of current dice hand in the ScoreCard under a certain category
      * @param category - category to calculate
      * @return Integer representing score
      */
-    protected int calculateScoreForCategory(ScoreCategory category) {
+    public int calculateScoreForCategory(ScoreCategory category) {
     	return scoreCard.calculateScoreForCategory(category, getDiceValues());
-    	
     }
     
     /**
@@ -204,7 +214,7 @@ public class Player implements Comparable<Player> {
      * @param category - the score category to retrieve.
      * @return the score for the specified category, or null if it hasn't been scored.
      */
-    public int getScoreForCategory(ScoreCategory category) {
+    public Integer getScoreForCategory(ScoreCategory category) {
         return scoreCard.getScoreForCategory(category);
     }
 
@@ -238,7 +248,7 @@ public class Player implements Comparable<Player> {
     }
     
     public List<String> getDiceFacesAsStrings() {
-        List<String> faces = new ArrayList<>();
+        List<String> faces = new ArrayList<String>();
         for (DiceValue face : getDiceFaces()) {
             faces.add(face.name()); // Convert DiceValue to its string name
         }
