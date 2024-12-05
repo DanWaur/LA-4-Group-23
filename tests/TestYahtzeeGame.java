@@ -150,6 +150,7 @@ public class TestYahtzeeGame {
     		gameCpu.chooseScore(null); //CPU
     	}
 
+    	System.out.println(gameCpu.getPlayerScores());
     	assertTrue(gameCpu.isGameOver());
     	assertEquals(2, gameCpu.getPlayerScores().size());
     }

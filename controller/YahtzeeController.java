@@ -2,6 +2,7 @@ package controller;
 
 import model.Player;
 import model.ScoreCategory;
+import model.YahtzeeGame;
 import view.YahtzeeGUI;
 
 import javax.swing.*;
@@ -10,31 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class YahtzeeController {
-    private final List<Player> players;
-    private Player currentPlayer;
+    private YahtzeeGame model;
     private final YahtzeeGUI gui;
 
     public YahtzeeController(YahtzeeGUI gui) {
         this.gui = gui;
-        this.players = gui.getPlayers();  // Retrieve players from YahtzeeGUI
     }
 
     public void initializeGame(JFrame frame) {
-        if (players.isEmpty()) {
-            int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
-            if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled.");
-
-            int numCPUs = promptForNumber(frame, "Select the Number of Computers:", 0, numPlayers);
-            if (numCPUs == -1) throw new IllegalStateException("Game initialization canceled.");
-
-            // Add human players
-            for (int i = 0; i < numPlayers - numCPUs; i++) players.add(new Player());
-            // Add CPU players (if any)
-            for (int i = 0; i < numCPUs; i++) players.add(new Player()); // CPU logic can be added here
+    	String[] options = {"Against CPU", "Against other players"};
+        int userChoice = JOptionPane.showOptionDialog( frame, "How would you like to play?", "Game Mode Select",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            
+        if (userChoice == 0) { // against cpu
+        	model = new YahtzeeGame(2, true);
         }
+        
+        else {
+        	int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
+        	if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled.");
 
-        if (!players.isEmpty()) {
-            currentPlayer = players.get(0); // Start with the first player
+        	model = new YahtzeeGame(numPlayers, false);
         }
     }
 
@@ -49,6 +46,8 @@ public class YahtzeeController {
         return input == null ? -1 : Integer.parseInt(input);
     }
 
+    
+    
     public void handleRollDice() {
         if (currentPlayer.getRollsLeft() >= 0) {
             currentPlayer.rollDice();
