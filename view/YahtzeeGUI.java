@@ -19,7 +19,8 @@ public class YahtzeeGUI {
     private JPanel dicePanel;
     private JButton rollButton;
     private YahtzeeController controller;
-    private List<Player> players;
+    private int playerCount;
+    private boolean hasCPU;
     private YahtzeeGame game;
 
     public static void main(String[] args) {
@@ -34,11 +35,10 @@ public class YahtzeeGUI {
 
         try {
             // Initialize players
-            players = initializePlayers(frame);
-            this.game = new YahtzeeGame(players.size(), false);
+            playerCount = initializePlayers(frame);
 
             // Initialize the controller and pass YahtzeeGUI
-            controller = new YahtzeeController(this.game);
+            controller = new YahtzeeController(playerCount, hasCPU);
             // controller.initializeGame(frame);
 
             // Set up the UI layout with scorecard, dice panel, and command panel
@@ -69,6 +69,7 @@ public class YahtzeeGUI {
     
                 // Toggle the dice state and update the display
                 controller.handleToggleDice(index);
+                // updateDiceDisplay(null);
             }
         });
         
@@ -187,37 +188,14 @@ public class YahtzeeGUI {
     }
 
     // Initialize players list
-    private List<Player> initializePlayers(JFrame frame) {
-        List<Player> players = new ArrayList<>();
+    private int initializePlayers(JFrame frame) {
         int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
         if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled.");
-
-        // int numCPUs = promptForNumber(frame, "Select the Number of Computers:", 0, numPlayers);
-        // if (numCPUs == -1) throw new IllegalStateException("Game initialization canceled.");
+        
         boolean cpuBool = promptForBool(frame, "Will this game have a CPU player?");
-
-        // // Add human players
-        // for (int i = 0; i < numPlayers - numCPUs; i++) {
-        //     players.add(new Player()); // Add human players
-        // }
-
-        // // Add CPU players (if any)
-        // for (int i = 0; i < numCPUs; i++) {
-        //     players.add(new Cpu()); // Add CPU players
-        // }
-
-        if (cpuBool == true) { // case for adding CPU
-            for (int i = 0; i < numPlayers - 1; i++) {
-                players.add(new Player()); // Add human players with CPU
-            }
-        }
-        else { // case for only human players
-            for (int i = 0; i < numPlayers; i++) {
-                players.add(new Player()); // Add human players
-            }
-        }
-
-        return players;
+        this.hasCPU = cpuBool;
+        
+        return numPlayers;
     }
 
     private boolean promptForBool(JFrame frame, String message) {

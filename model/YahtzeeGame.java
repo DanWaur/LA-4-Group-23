@@ -58,7 +58,10 @@ public class YahtzeeGame {
      * @param diceIndices - a list of indices representing the dice to toggle.
      */
     public void toggleDice(List<Integer> diceIndices) {
-        getCurrentPlayer().toggleDice(diceIndices);
+        Player currPlayer = getCurrentPlayer();
+        if (!currPlayer.hasRolled()) {
+            return;
+        }
     }
 
     /**

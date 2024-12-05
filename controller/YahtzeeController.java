@@ -9,88 +9,31 @@ import view.YahtzeeGUI;
 import javax.swing.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class YahtzeeController {
     private final YahtzeeGame model;
 
-    public YahtzeeController(YahtzeeGame model) {
-        this.model = model;
+    public YahtzeeController(int playerCount, boolean hasCPU) {
+        this.model = new YahtzeeGame(playerCount, hasCPU);
     }
 
+    public void handleRollDice() {
+        model.rollDice();
+    }
 
-    // private final List<Player> players;
-    // private Player currentPlayer;
-    // private final YahtzeeGUI gui;
-    // private final YahtzeeGame game;
+    public void handleChooseScore() {
+        if (!currentPlayer.hasRolled()) {
+            gui.showMessage("You must roll at least once before choosing a score.");
+            return;
+        }
 
-    // // public YahtzeeController(YahtzeeGUI gui) {
-    // //     this.gui = gui;
-    // //     this.players = gui.getPlayers();  // Retrieve players from YahtzeeGUI
-    // //     this.game = new YahtzeeGame(0, false);
-    // // }
-
-    // public YahtzeeController(YahtzeeGame game) {
-    //     this.game = game;
-    // }
-
-    // //     if (players.isEmpty()) {
-    // //         int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
-    // //         if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled.");
-
-    // //         int numCPUs = promptForNumber(frame, "Select the Number of Computers:", 0, numPlayers);
-    // //         if (numCPUs == -1) throw new IllegalStateException("Game initialization canceled.");
-
-    // //         // Add human players
-    // //         for (int i = 0; i < numPlayers - numCPUs; i++) players.add(new Player());
-    // //         // Add CPU players (if any)
-    // //         for (int i = 0; i < numCPUs; i++) players.add(new Cpu()); // CPU logic can be added here
-    // //     }
-
-    // public void initializeGame(JFrame frame) {
-        
-    // }
-
-    // private int promptForNumber(JFrame frame, String message, int min, int max) {
-    //     String[] options = new String[max - min + 1];
-    //     for (int i = min; i <= max; i++) {
-    //         options[i - min] = String.valueOf(i);
-    //     }
-
-    //     String input = (String) JOptionPane.showInputDialog(frame, message, "Players",
-    //             JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-    //     return input == null ? -1 : Integer.parseInt(input);
-    // }
-
-    // public void handleRollDice() {
-    //     if (currentPlayer.getClass() == Cpu.class) {
-            
-    //     }
-    //     if (currentPlayer.getRollsLeft() >= 0) {
-    //         currentPlayer.rollDice();
-    //         currentPlayer.setHasRolled(true);
-    //         gui.updateDiceDisplay(currentPlayer);
-
-    //         displayPotentialScores();
-    //         if (currentPlayer.getRollsLeft() == 0) {
-    //             gui.showMessage("Rolls finished. Please choose a score.");
-    //         }
-    //     } else {
-    //         gui.showMessage("No rolls left! Please choose a score.");
-    //     }
-    // }
-
-    // public void handleChooseScore() {
-    //     if (!currentPlayer.hasRolled()) {
-    //         gui.showMessage("You must roll at least once before choosing a score.");
-    //         return;
-    //     }
-
-    //     boolean scoreChosen = promptPlayerToChooseScore();
-    //     if (scoreChosen) {
-    //         moveToNextPlayer();
-    //     }
-    // }
+        boolean scoreChosen = promptPlayerToChooseScore();
+        if (scoreChosen) {
+            moveToNextPlayer();
+        }
+    }
 
     // private void displayPotentialScores() {
     //     int playerColumnIndex = players.indexOf(currentPlayer) + 1; // Column in the scorecard
@@ -103,21 +46,21 @@ public class YahtzeeController {
     //     }
     // }
 
-    // private boolean promptPlayerToChooseScore() {
-    //     List<String> selectableCategories = new ArrayList<>();
+    private boolean promptPlayerToChooseScore() {
+        List<String> selectableCategories = new ArrayList<>();
 
-    //     for (ScoreCategory category : ScoreCategory.values()) {
-    //         if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
-    //             int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate potential score
-    //             selectableCategories.add(category.name() + " (" + potentialScore + ")");
-    //         }
-    //     }
+        for (ScoreCategory category : ScoreCategory.values()) {
+            if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
+                int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate potential score
+                selectableCategories.add(category.name() + " (" + potentialScore + ")");
+            }
+        }
 
-    //     // here we can add end game logic (but need to make sure both players == selectableCategories.isEmpty())
-    //     if (selectableCategories.isEmpty()) {
-    //         gui.showMessage("All categories scored!");
-    //         return false;
-    //     }
+        // here we can add end game logic (but need to make sure both players == selectableCategories.isEmpty())
+        if (selectableCategories.isEmpty()) {
+            gui.showMessage("All categories scored!");
+            return false;
+        }
 
     //     String selected = gui.showInputDialog("Choose a scoring category:", selectableCategories.toArray(new String[0]));
     //     if (selected == null) return false;
@@ -143,34 +86,35 @@ public class YahtzeeController {
     //     gui.showMessage("It's now Player " + (nextPlayerIndex + 1) + "'s turn!");
     // }
 
-    // // The method to toggle the dice hold state
-    // public void handleToggleDice(int index) {
-    //     if (index < 0 || index >= currentPlayer.getDiceFaces().size()) {
-    //         return; // Invalid index, just return
-    //     }
+    // The method to toggle the dice hold state
+    public void handleToggleDice(int index) {
+        if (index < 0 || index >= 5) {
+            return; // Invalid index, just return
+        }
     
-    //     // Check if the player has rolled before allowing dice toggling
-    //     if (!currentPlayer.hasRolled()) {
-    //         System.out.println("Cannot toggle dice before rolling.");
-    //         return; // Prevent toggling if the player has not rolled yet
-    //     }
+        // // Check if the player has rolled before allowing dice toggling
+        // if (!currentPlayer.hasRolled()) {
+        //     System.out.println("Cannot toggle dice before rolling.");
+        //     return; // Prevent toggling if the player has not rolled yet
+        // }
     
-    //     // Get the dice index and toggle its hold state through the Player class
-    //     List<Integer> dicePos = new ArrayList<>();
-    //     dicePos.add(index); // Add the clicked dice index to the list
+        // Get the dice index and toggle its hold state through the Player class
+        List<Integer> dicePos = new ArrayList<>();
+        dicePos.add(index); // Add the clicked dice index to the list
+        model.toggleDice(dicePos);
+        // // Update the dice display to reflect the change
+        // gui.updateDiceDisplay(currentPlayer);
+    }
     
-    //     // Call the toggleDice method in Player class
-    //     currentPlayer.toggleDice(dicePos); // Toggling dice state using the Player class method
-    
-    //     // Update the dice display to reflect the change
-    //     gui.updateDiceDisplay(currentPlayer);
-    // }
-    
-    // public List<String> getPlayerNames() {
-    //     List<String> playerNames = new ArrayList<>();
-    //     for (Player player : players) {
-    //         playerNames.add("Player " + (players.indexOf(player) + 1));
-    //     }
-    //     return playerNames;
-    // }
+    public List<String> getPlayerNames() {
+        List<String> playerNames = new ArrayList<>();
+        String[] players = (String[]) model.getPlayerScores().keySet().toArray();
+        for (String name : players) {
+            playerNames.add(name);
+        }
+        // for (Player player : model.getPlayerScores()) {
+        //     playerNames.add("Player " + (players.indexOf(player) + 1));
+        // }
+        return playerNames;
+    }
 }
