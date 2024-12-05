@@ -63,7 +63,7 @@ public class Player implements Comparable<Player> {
      * @return true if the dice were rolled successfully, false if no rolls are left.
      */
     public boolean rollDice() {
-        if (rollsLeft >= 0) {
+        if (rollsLeft > 0) {
             for (Dice die : dice) {
                 die.roll();
             }
@@ -107,6 +107,15 @@ public class Player implements Comparable<Player> {
             values[i] = dice.get(i).getFaceVal(); // Convert DiceValue to 1-6
         }
         return values;
+    }
+
+    /**
+     * Calculates score of current dice hand in the ScoreCard under a certain category
+     * @param category - category to calculate
+     * @return Integer representing score
+     */
+    public int calculateScoreForCategory(ScoreCategory category) {
+    	return scoreCard.calculateScoreForCategory(category, getDiceValues());
     }
     
     /**

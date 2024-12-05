@@ -55,10 +55,9 @@ public class YahtzeeController {
             currentPlayer.setHasRolled(true);
             gui.updateDiceDisplay(currentPlayer);
 
-            if (currentPlayer.getRollsLeft() == -1) {
+            displayPotentialScores();
+            if (currentPlayer.getRollsLeft() == 0) {
                 gui.showMessage("Rolls finished. Please choose a score.");
-            } else {
-                displayPotentialScores();
             }
         } else {
             gui.showMessage("No rolls left! Please choose a score.");
