@@ -8,7 +8,6 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Player implements Comparable<Player> {
     private String name;
@@ -244,7 +243,7 @@ public class Player implements Comparable<Player> {
     }
     
     public List<String> getDiceFacesAsStrings() {
-        List<String> faces = new ArrayList<>();
+        List<String> faces = new ArrayList<String>();
         for (DiceValue face : getDiceFaces()) {
             faces.add(face.name()); // Convert DiceValue to its string name
         }
