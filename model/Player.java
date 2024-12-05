@@ -223,6 +223,7 @@ public class Player implements Comparable<Player> {
      * @return - a negative integer, zero, or a positive integer as this player's score 
      * is less than, equal to, or greater than the other player's score.
      */
+    @Override
     public int compareTo(Player other) {
         return this.getTotalScore() - other.getTotalScore();
     }
@@ -230,11 +231,6 @@ public class Player implements Comparable<Player> {
     public boolean scoreCategory(ScoreCategory category) {
         return scoreCard.score(category, getDiceValues());
     }
-
-    public int calculateScoreForCategory(ScoreCategory category) {
-        return scoreCard.calculateScoreForCategory(category, getDiceValues());
-    }
-
 
     public void prepareForNextTurn() {
         resetRolls();
