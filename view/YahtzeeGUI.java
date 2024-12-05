@@ -49,7 +49,7 @@ public class YahtzeeGUI {
     }
 
     private JLabel createDiceLabel(String face, boolean isHeld, int index) {
-        String diceImagePath = "/resources/dice-" + face + ".png"; // Path to dice image
+        String diceImagePath = "resources/dice-" + face + ".png"; // Path to dice image
         ImageIcon diceIcon = new ImageIcon(new ImageIcon(diceImagePath).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
         JLabel diceLabel = new JLabel(diceIcon, SwingConstants.CENTER);
         
