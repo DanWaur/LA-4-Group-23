@@ -11,9 +11,11 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class YahtzeeController {
     private final YahtzeeGame model;
+    // private Player currentPlayer;
 
     public YahtzeeController(int playerCount, boolean hasCPU) {
         this.model = new YahtzeeGame(playerCount, hasCPU);
@@ -24,15 +26,16 @@ public class YahtzeeController {
     }
 
     public void handleChooseScore() {
-        if (!currentPlayer.hasRolled()) {
-            gui.showMessage("You must roll at least once before choosing a score.");
+        boolean chooseScoreBool = model.chooseScore(null);
+        if (chooseScoreBool == false) {
+            // gui.showMessage("You must roll at least once before choosing a score.");
             return;
         }
 
-        boolean scoreChosen = promptPlayerToChooseScore();
-        if (scoreChosen) {
-            moveToNextPlayer();
-        }
+        // boolean scoreChosen = promptPlayerToChooseScore();
+        // if (scoreChosen) {
+        //     moveToNextPlayer();
+        // }
     }
 
     // private void displayPotentialScores() {
@@ -46,21 +49,21 @@ public class YahtzeeController {
     //     }
     // }
 
-    private boolean promptPlayerToChooseScore() {
-        List<String> selectableCategories = new ArrayList<>();
+    // private boolean promptPlayerToChooseScore() {
+    //     List<String> selectableCategories = new ArrayList<>();
 
-        for (ScoreCategory category : ScoreCategory.values()) {
-            if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
-                int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate potential score
-                selectableCategories.add(category.name() + " (" + potentialScore + ")");
-            }
-        }
+    //     for (ScoreCategory category : ScoreCategory.values()) {
+    //         if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
+    //             int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate potential score
+    //             selectableCategories.add(category.name() + " (" + potentialScore + ")");
+    //         }
+    //     }
 
-        // here we can add end game logic (but need to make sure both players == selectableCategories.isEmpty())
-        if (selectableCategories.isEmpty()) {
-            gui.showMessage("All categories scored!");
-            return false;
-        }
+    //     // here we can add end game logic (but need to make sure both players == selectableCategories.isEmpty())
+    //     if (selectableCategories.isEmpty()) {
+    //         gui.showMessage("All categories scored!");
+    //         return false;
+    //     }
 
     //     String selected = gui.showInputDialog("Choose a scoring category:", selectableCategories.toArray(new String[0]));
     //     if (selected == null) return false;
@@ -91,24 +94,23 @@ public class YahtzeeController {
         if (index < 0 || index >= 5) {
             return; // Invalid index, just return
         }
-    
-        // // Check if the player has rolled before allowing dice toggling
-        // if (!currentPlayer.hasRolled()) {
-        //     System.out.println("Cannot toggle dice before rolling.");
-        //     return; // Prevent toggling if the player has not rolled yet
-        // }
-    
+
         // Get the dice index and toggle its hold state through the Player class
         List<Integer> dicePos = new ArrayList<>();
         dicePos.add(index); // Add the clicked dice index to the list
-        model.toggleDice(dicePos);
+        boolean validToggle = model.toggleDice(dicePos);
+        if (validToggle == false) { // Prevent toggling if the player has not rolled yet
+            System.out.println("Cannot toggle dice before rolling.");
+            return; 
+        }
         // // Update the dice display to reflect the change
         // gui.updateDiceDisplay(currentPlayer);
     }
     
     public List<String> getPlayerNames() {
         List<String> playerNames = new ArrayList<>();
-        String[] players = (String[]) model.getPlayerScores().keySet().toArray();
+        Set<String> playerMapKeys = model.getPlayerScores().keySet();
+        String[] players = playerMapKeys.toArray(new String[playerMapKeys.size()]);
         for (String name : players) {
             playerNames.add(name);
         }

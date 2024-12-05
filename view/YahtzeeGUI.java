@@ -21,7 +21,6 @@ public class YahtzeeGUI {
     private YahtzeeController controller;
     private int playerCount;
     private boolean hasCPU;
-    private YahtzeeGame game;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -199,14 +198,15 @@ public class YahtzeeGUI {
     }
 
     private boolean promptForBool(JFrame frame, String message) {
-        int input = JOptionPane.showOptionDialog(frame, 
-                                     message, 
-                                     "Add CPU player?", 
-                                     JOptionPane.YES_NO_OPTION, 
-                                     JOptionPane.QUESTION_MESSAGE, 
-                                     null, 
-                                     null, 
-                                     1);
+        int input = JOptionPane.showOptionDialog(
+            frame, 
+            message, 
+            "Add CPU player?", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            null, 
+            1);
         return input == 0; // default boolean returned should be false (for no)
     }
 
@@ -239,10 +239,10 @@ public class YahtzeeGUI {
         }
     }
 
-    // Method to get the players list (so controller can access it)
-    public List<Player> getPlayers() {
-        return players;  // Return the players list
-    }
+    // // Method to get the players list (so controller can access it)
+    // public List<Player> getPlayers() {
+    //     return players;  // Return the players list
+    // }
 
     // This method returns the list of player names from the controller
     public List<String> getPlayerNames() {
