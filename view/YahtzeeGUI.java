@@ -1,16 +1,12 @@
 package view;
 
 import controller.YahtzeeController;
-import model.Cpu;
-import model.Player;
-import model.ScoreCategory;
-import model.YahtzeeGame;
-
+import java.awt.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import model.Player;
+import model.ScoreCategory;
 
 public class YahtzeeGUI {
 
@@ -188,11 +184,16 @@ public class YahtzeeGUI {
 
     // Initialize players list
     private int initializePlayers(JFrame frame) {
-        int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
-        if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled.");
-        
+        // prompt for cpu first, no need to prompt number of players if it'll be irrelevant
         boolean cpuBool = promptForBool(frame, "Will this game have a CPU player?");
         this.hasCPU = cpuBool;
+        if (this.hasCPU) {
+            return 2; // we know if it's a CPU game, we can return that there's 2 players
+        }
+
+
+        int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
+        if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled."); 
         
         return numPlayers;
     }
