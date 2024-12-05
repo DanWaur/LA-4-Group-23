@@ -1,8 +1,10 @@
 package view;
 
 import controller.YahtzeeController;
+import model.Cpu;
 import model.Player;
 import model.ScoreCategory;
+import model.YahtzeeGame;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -18,6 +20,7 @@ public class YahtzeeGUI {
     private JButton rollButton;
     private YahtzeeController controller;
     private List<Player> players;
+    private YahtzeeGame game;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -32,10 +35,11 @@ public class YahtzeeGUI {
         try {
             // Initialize players
             players = initializePlayers(frame);
+            this.game = new YahtzeeGame(players.size(), false);
 
             // Initialize the controller and pass YahtzeeGUI
-            controller = new YahtzeeController(this);
-            controller.initializeGame(frame);
+            controller = new YahtzeeController(this.game);
+            // controller.initializeGame(frame);
 
             // Set up the UI layout with scorecard, dice panel, and command panel
             frame.add(createScorecardPanel(controller.getPlayerNames()), BorderLayout.WEST);
@@ -49,7 +53,7 @@ public class YahtzeeGUI {
     }
 
     private JLabel createDiceLabel(String face, boolean isHeld, int index) {
-        String diceImagePath = "/resources/dice-" + face + ".png"; // Path to dice image
+        String diceImagePath = "resources/dice-" + face + ".png"; // Path to dice image
         ImageIcon diceIcon = new ImageIcon(new ImageIcon(diceImagePath).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
         JLabel diceLabel = new JLabel(diceIcon, SwingConstants.CENTER);
         
@@ -188,20 +192,44 @@ public class YahtzeeGUI {
         int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
         if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled.");
 
-        int numCPUs = promptForNumber(frame, "Select the Number of Computers:", 0, numPlayers);
-        if (numCPUs == -1) throw new IllegalStateException("Game initialization canceled.");
+        // int numCPUs = promptForNumber(frame, "Select the Number of Computers:", 0, numPlayers);
+        // if (numCPUs == -1) throw new IllegalStateException("Game initialization canceled.");
+        boolean cpuBool = promptForBool(frame, "Will this game have a CPU player?");
 
-        // Add human players
-        for (int i = 0; i < numPlayers - numCPUs; i++) {
-            players.add(new Player()); // Add human players
+        // // Add human players
+        // for (int i = 0; i < numPlayers - numCPUs; i++) {
+        //     players.add(new Player()); // Add human players
+        // }
+
+        // // Add CPU players (if any)
+        // for (int i = 0; i < numCPUs; i++) {
+        //     players.add(new Cpu()); // Add CPU players
+        // }
+
+        if (cpuBool == true) { // case for adding CPU
+            for (int i = 0; i < numPlayers - 1; i++) {
+                players.add(new Player()); // Add human players with CPU
+            }
         }
-
-        // Add CPU players (if any)
-        for (int i = 0; i < numCPUs; i++) {
-            players.add(new Player()); // Add CPU players
+        else { // case for only human players
+            for (int i = 0; i < numPlayers; i++) {
+                players.add(new Player()); // Add human players
+            }
         }
 
         return players;
+    }
+
+    private boolean promptForBool(JFrame frame, String message) {
+        int input = JOptionPane.showOptionDialog(frame, 
+                                     message, 
+                                     "Add CPU player?", 
+                                     JOptionPane.YES_NO_OPTION, 
+                                     JOptionPane.QUESTION_MESSAGE, 
+                                     null, 
+                                     null, 
+                                     1);
+        return input == 0; // default boolean returned should be false (for no)
     }
 
     private int promptForNumber(JFrame frame, String message, int min, int max) {
@@ -237,9 +265,6 @@ public class YahtzeeGUI {
     public List<Player> getPlayers() {
         return players;  // Return the players list
     }
-
-    
-    
 
     // This method returns the list of player names from the controller
     public List<String> getPlayerNames() {
