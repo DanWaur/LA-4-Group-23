@@ -121,6 +121,8 @@ public class YahtzeeGame {
 
     //  double check this, made this public
     public void advanceTurn() {
+        getCurrentPlayer().prepareForNextTurn();
+        
         currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0; // loop back to the first player
@@ -237,39 +239,66 @@ public class YahtzeeGame {
     
     
 
-    public Object[][] getScorecardData() {
-        int numCategories = ScoreCategory.values().length;
-        int numPlayers = players.size();
-        Object[][] data = new Object[numCategories + 1][numPlayers + 1]; 
-    
-        // Header row
-        data[0][0] = "Category/Player"; // Corner cell
-        for (int col = 0; col < numPlayers; col++) {
-            data[0][col + 1] = players.get(col).getName(); // Player names
-        }
-    
-        // Fill categories and scores
-        for (int row = 0; row < numCategories; row++) {
-            ScoreCategory category = ScoreCategory.values()[row];
-            data[row + 1][0] = category.name(); // Category name
-            for (int col = 0; col < numPlayers; col++) {
-                Integer score = players.get(col).getScoreForCategory(category);
-                data[row + 1][col + 1] = (score != null) ? score : "-";
-            }
-        }
-    
-        // Fill total scores
-        data[numCategories][0] = "Total";
-        for (int col = 0; col < numPlayers; col++) {
-            data[numCategories][col + 1] = players.get(col).getTotalScore();
-        }
-    
-        return data;
-    }
-
 
     public String getCurrentPlayerName() {
         return getCurrentPlayer().getName();
+    }
+
+    public int getNumberOfPlayers() {
+        return players.size();
+    }
+
+    public String getPlayerName(int index) {
+        return players.get(index).getName();
+    }
+    
+
+    private Player getPlayerByName(String playerName) {
+        for (Player player : players) {
+            if (player.getName().equals(playerName)) {
+                return player;
+            }
+        }
+        return null; // Player not found
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+    
+    
+    public boolean hasPlayerRolled(String playerName) {
+        Player player = getPlayerByName(playerName);
+        return player != null && player.hasRolled(); // Ensure player exists and has rolled
+    }
+
+
+    public Map<ScoreCategory, Integer> calculatePotentialScoresForPlayer(String playerName) {
+        Player player = getPlayerByName(playerName);
+        if (player == null) {
+            throw new IllegalArgumentException("Player not found: " + playerName);
+        }
+    
+        Map<ScoreCategory, Integer> potentialScores = new HashMap<>();
+        for (ScoreCategory category : ScoreCategory.values()) {
+            if (!player.isScored(category)) {
+                int score = player.calculateScoreForCategory(category);
+                potentialScores.put(category, score);
+            } else {
+                potentialScores.put(category, player.getScoreForCategory(category));
+            }
+        }
+        return potentialScores;
+    }
+    
+    
+    
+    public List<DiceValue> getCurrentPlayerDiceFaces() {
+        return getCurrentPlayer().getDiceFaces(); // Delegate to the current player's method
+    }
+    
+    public List<Boolean> getCurrentPlayerDiceHolds() {
+        return getCurrentPlayer().getDiceHoldStates(); // Delegate to the current player's method
     }
     
 

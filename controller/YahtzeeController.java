@@ -1,8 +1,9 @@
 package controller;
 
 import model.YahtzeeGame;
-import model.Player;
+import model.DiceValue;
 import model.ScoreCategory;
+import model.Player;
 import java.util.List;
 import java.util.Map;
 
@@ -52,9 +53,26 @@ public class YahtzeeController {
     
 
     public Object[][] getScorecardData() {
-        return game.getScorecardData();
+        int numCategories = ScoreCategory.values().length;
+        int numPlayers = game.getNumberOfPlayers();
+        Object[][] data = new Object[numCategories + 1][numPlayers + 1]; // +1 for header row
+    
+        // Fill category rows
+        for (int row = 0; row < numCategories; row++) {
+            ScoreCategory category = ScoreCategory.values()[row];
+            data[row + 1][0] = category.name(); // Category name
+            for (int col = 0; col < numPlayers; col++) {
+                String playerName = game.getPlayerName(col);
+                Integer score = game.getCategoryScoreForPlayer(playerName, category);
+                data[row + 1][col + 1] = (score != null) ? score : "-"; // Placeholder if null
+            }
+        }
+    
+        return data;
     }
+    
 
+    
 
     public List<String> getSelectableCategories(String playerName) {
         return game.getSelectableCategories(playerName);
@@ -68,6 +86,58 @@ public class YahtzeeController {
         return game.getCurrentPlayerName();
     }
     
+    
+    public int calculateTotalScore(String playerName) {
+        int total = 0;
+        for (ScoreCategory category : ScoreCategory.values()) {
+            Integer score = game.getCategoryScoreForPlayer(playerName, category);
+            if (score != null) {
+                total += score;
+            }
+        }
+        return total;
+    }
+
+
+    public boolean scoreSelectedCategory(String playerName, String selectedCategory) {
+        
+        String categoryName = selectedCategory.split(" ")[0];
+        ScoreCategory category = ScoreCategory.valueOf(categoryName);
+    
+        // Delegate scoring to the game
+        return game.scoreCategoryForPlayer(playerName, category);
+    }
+    
+    
+
+    public boolean hasPlayerRolled(String playerName) {
+        return game.hasPlayerRolled(playerName); // Delegate to game
+    }
+
+    public Map<ScoreCategory, Integer> getPotentialScores(String playerName) {
+        return game.calculatePotentialScoresForPlayer(playerName); // Delegate to game
+    }
+
+    public int getCurrentPlayerIndex() {
+        return game.getCurrentPlayerIndex(); // Delegate to game
+    }
+
+
+    public void advanceToNextPlayer() {
+        game.advanceTurn(); // Delegate to the model
+    }
+    
+    
+
+    public List<DiceValue> getCurrentDiceFaces() {
+        return game.getCurrentPlayerDiceFaces();
+    }
+
+    public List<Boolean> getCurrentDiceHolds() {
+        return game.getCurrentPlayerDiceHolds();
+    }
+
+
     
     
     
