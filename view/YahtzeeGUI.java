@@ -1,81 +1,57 @@
 package view;
 
 import controller.YahtzeeController;
-import java.awt.*;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import model.DiceValue;
 import model.Player;
 import model.ScoreCategory;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.Timer;
+
 public class YahtzeeGUI {
 
-    public JTable scorecardTable;
-    private DefaultTableModel tableModel;
-    private JPanel dicePanel;
-    private JButton rollButton;
-    private YahtzeeController controller;
-    private int playerCount;
+    private static YahtzeeController controller;
+    private static JTable scorecardTable;
+    private static DefaultTableModel tableModel;
+    private static JPanel dicePanel;
+    private static JButton rollButton;
+    private static JButton chooseScoreButton; 
+
     private boolean hasCPU;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            YahtzeeGUI gui = new YahtzeeGUI();
-            gui.setupGame();
-        });
-    }
-
-    private void setupGame() {
-        JFrame frame = createMainFrame();
-
-        try {
-            // Initialize players
-            playerCount = initializePlayers(frame);
-
-            // Initialize the controller and pass YahtzeeGUI
-            controller = new YahtzeeController(playerCount, hasCPU);
-            // controller.initializeGame(frame);
-
-            // Set up the UI layout with scorecard, dice panel, and command panel
-            frame.add(createScorecardPanel(controller.getPlayerNames()), BorderLayout.WEST);
+            // Create the main frame
+            JFrame frame = createMainFrame();
+    
+            // Initialize player settings
+            YahtzeeGUI yahtzeeGUI = new YahtzeeGUI();
+            int numPlayers = yahtzeeGUI.initializePlayers(frame);
+    
+            // Initialize the controller with the chosen settings
+            boolean isCPU = numPlayers == 2 && yahtzeeGUI.hasCPU; // If CPU is enabled, this is true
+            controller = new YahtzeeController(numPlayers, isCPU);
+    
+            // Create and display the GUI
+            frame.add(createScorecardPanel(), BorderLayout.WEST);
             frame.add(createDicePanel(), BorderLayout.CENTER);
             frame.add(createCommandPanel(), BorderLayout.SOUTH);
-
             frame.setVisible(true);
-        } catch (IllegalStateException e) {
-            System.exit(0); // Exit if game setup fails
-        }
-    }
-
-    private JLabel createDiceLabel(String face, boolean isHeld, int index) {
-        String diceImagePath = "resources/dice-" + face + ".png"; // Path to dice image
-        ImageIcon diceIcon = new ImageIcon(new ImageIcon(diceImagePath).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
-        JLabel diceLabel = new JLabel(diceIcon, SwingConstants.CENTER);
-        
-        // Add a red border if the die is held (we will make this look better)
-        if (isHeld) {
-            diceLabel.setBorder(BorderFactory.createLineBorder(Color.RED, 3));  // Red border for held dice
-        } 
-        
-        // Add mouse listener to toggle the dice hold state
-        diceLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent e) {
-    
-                // Toggle the dice state and update the display
-                controller.handleToggleDice(index);
-                // updateDiceDisplay(null);
-            }
         });
-        
-        return diceLabel;
     }
     
 
-    private JFrame createMainFrame() {
+    private static JFrame createMainFrame() {
         JFrame frame = new JFrame("Yahtzee");
-        frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
 
         JLabel titleLabel = new JLabel("Yahtzee", SwingConstants.CENTER);
@@ -85,102 +61,244 @@ public class YahtzeeGUI {
         return frame;
     }
 
-    private JPanel createScorecardPanel(List<String> playerNames) {
-        JPanel scorecardPanel = new JPanel(new BorderLayout());
-        String[] scorecardColumnHeaders = createScorecardHeaders(playerNames);
-        Object[][] scorecardData = createScorecardData();
-    
-        tableModel = new DefaultTableModel(scorecardData, scorecardColumnHeaders) {
+    private static JPanel createScorecardPanel() {
+        String[] headers = createScorecardHeaders();
+        int rows = ScoreCategory.values().length + 2; // Categories + totals
+        Object[][] data = new Object[rows][headers.length]; // Ensure rows match
+        int i = 1;
+        for (ScoreCategory cat : ScoreCategory.values()) {
+            data[i][0] = cat;
+            i++;
+        }
+        data[i][0] = "Total score";
+        
+        tableModel = new DefaultTableModel(data, headers) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Disable editing in the scorecard table
+                return false;
             }
         };
+        
         scorecardTable = new JTable(tableModel);
-        scorecardPanel.add(new JScrollPane(scorecardTable), BorderLayout.CENTER);
-    
-        return scorecardPanel;
+        JScrollPane scrollPane = new JScrollPane(scorecardTable);
+        
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        return panel;
     }
     
+    
+    
 
-    private String[] createScorecardHeaders(List<String> playerNames) {
-        String[] headers = new String[playerNames.size() + 1];
-        headers[0] = "Category"; // First column is for the score categories
-        for (int i = 0; i < playerNames.size(); i++) {
-            headers[i + 1] = playerNames.get(i); // Add player names as column headers
-        }
-        return headers;
-    }
-
-    private Object[][] createScorecardData() {
-        Object[][] data = new Object[ScoreCategory.values().length + 1][2];
-        data[0][0] = "Total"; // Header row for total score
-        for (int i = 0; i < ScoreCategory.values().length; i++) {
-            data[i + 1][0] = ScoreCategory.values()[i].name(); // List score categories
-        }
-        return data;
-    }
-
-    private JPanel createDicePanel() {
-        dicePanel = new JPanel(new GridLayout(1, 5, 10, 10)); // Panel to hold dice
+    private static JPanel createDicePanel() {
+        dicePanel = new JPanel(new GridLayout(1, 5, 10, 10));
         dicePanel.setBackground(Color.LIGHT_GRAY);
         return dicePanel;
     }
 
-    private JPanel createCommandPanel() {
+    private static JPanel createCommandPanel() {
         JPanel panel = new JPanel();
 
+        // Roll Dice Button
         rollButton = new JButton("Roll Dice");
-        rollButton.addActionListener(e -> controller.handleRollDice()); // Button to roll dice
+        rollButton.addActionListener(e -> handleRollDice());
         panel.add(rollButton);
 
-        JButton chooseScoreButton = new JButton("Choose Score");
-        chooseScoreButton.addActionListener(e -> controller.handleChooseScore()); // Button to choose score
+        // Choose Score Button
+        chooseScoreButton = new JButton("Choose Score");
+        chooseScoreButton.setEnabled(false); 
+        chooseScoreButton.addActionListener(e -> handleChooseScore());
         panel.add(chooseScoreButton);
 
         return panel;
     }
 
-    public void updateDiceDisplay(Player player) {
-        dicePanel.removeAll(); // Clear current dice display
-        List<String> diceFaces = player.getDiceFacesAsStrings();
-        List<Boolean> diceHolds = player.getDiceHoldStates();
+    private static void handleRollDice() {
+        if (controller.rollDice()) {
+            updateDicePanel(); // Update the dice display
+            displayPotentialScores(); // Update potential scores for the current player
+            chooseScoreButton.setEnabled(true); // Enable the "Choose Score" button
+        } else {
+            JOptionPane.showMessageDialog(null, "No rolls left! Please choose a score.");
+        }
+    }
     
-        // Update dice display for each die
+    
+
+    private static String[] createScorecardHeaders() {
+        int playerCount = controller.getPlayers().size(); // Fetch the number of players dynamically
+        String[] headers = new String[playerCount + 1];
+        headers[0] = "Category"; // First column header
+        for (int i = 1; i <= playerCount; i++) {
+            headers[i] = controller.getPlayers().get(i - 1).getName(); // Player names from the controller
+        }
+        return headers;
+    }
+
+    
+    
+
+    private static void handleChooseScore() {
+        if (!controller.hasPlayerRolled(controller.getCurrentPlayerName())) {
+            JOptionPane.showMessageDialog(null, "You must roll the dice at least once before choosing a score.");
+            return;
+        }
+    
+        String currentPlayerName = controller.getCurrentPlayerName(); // Get the current player's name
+        List<String> selectableCategories = controller.getSelectableCategories(currentPlayerName); // Fetch selectable categories
+    
+        if (selectableCategories.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "All categories scored!");
+            return;
+        }
+    
+        String[] categoryArray = selectableCategories.toArray(new String[0]); // Convert list to array for input dialog
+        String selectedCategory = (String) JOptionPane.showInputDialog(
+                null,
+                "Choose a scoring category:",
+                "Score Selection",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                categoryArray,
+                categoryArray[0]
+        );
+    
+        if (selectedCategory == null) {
+            // User pressed cancel
+            return;
+        }
+    
+        // Delegate scoring to the controller
+        boolean scoredSuccessfully = controller.scoreSelectedCategory(currentPlayerName, selectedCategory);
+        System.out.println("Score successful: " + scoredSuccessfully);
+        System.out.println("Current Player before move: " + controller.getCurrentPlayerName());
+    
+        if (scoredSuccessfully) {
+            JOptionPane.showMessageDialog(null, "Score saved!");
+            updateScores(); // Update the scores table
+            updateDicePanel(); // Update the dice panel
+            moveToNextPlayer(); // Move to the next player
+            chooseScoreButton.setEnabled(false); // Disable the button for the next player
+        } else {
+            JOptionPane.showMessageDialog(null, "Category already scored!");
+        }
+    }
+    
+    
+
+    
+
+    
+
+    private static void updateDicePanel() {
+        dicePanel.removeAll(); // Clear existing dice labels from the panel
+
+        // Get the current player's dice information from the controller
+        List<DiceValue> diceFaces = controller.getCurrentDiceFaces(); // Retrieve dice faces via the controller
+        List<Boolean> diceHolds = controller.getCurrentDiceHolds();   // Retrieve dice hold states via the controller
+
         for (int i = 0; i < diceFaces.size(); i++) {
             JLabel diceLabel;
             if (diceFaces.get(i) == null) {
-                diceLabel = new JLabel(new ImageIcon("resources/dice-ONE.png"), SwingConstants.CENTER); // Placeholder for unset dice
+                // Show a placeholder image for unset dice
+                diceLabel = new JLabel(new ImageIcon("resources/dice-ONE.png"), SwingConstants.CENTER);
             } else {
-                diceLabel = createDiceLabel(diceFaces.get(i), diceHolds.get(i), i); // Create label for dice
+                // Create a label for the dice face and hold state
+                diceLabel = createDiceLabel(diceFaces.get(i), diceHolds.get(i), i);
             }
-            dicePanel.add(diceLabel);
-            
+            dicePanel.add(diceLabel); // Add the label to the panel
+        }
+
+        dicePanel.revalidate(); // Refresh the layout
+        dicePanel.repaint();    // Repaint the panel    
+    }
+    
+    private static void hideDicePanel() {
+        dicePanel.removeAll(); // Clear existing dice labels from the panel
+    }
+
+
+    private static JLabel createDiceLabel(DiceValue face, boolean isHeld, int index) {
+        String imagePath = "resources/dice-" + face.name() + ".png";
+        ImageIcon icon = new ImageIcon(new ImageIcon(imagePath).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
+        JLabel label = new JLabel(icon, SwingConstants.CENTER);
+    
+        if (isHeld) {
+            label.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
         }
     
-        dicePanel.revalidate(); // Refresh dice panel
-        dicePanel.repaint(); // Repaint the panel to show updates
+        label.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                String currentPlayerName = controller.getCurrentPlayerName();
+                if (!controller.hasPlayerRolled(currentPlayerName)) {
+                    JOptionPane.showMessageDialog(null, "You must roll the dice before toggling!");
+                    return;
+                }
+                if (controller.getCurrentPlayerName() == "CPU") {
+                    JOptionPane.showMessageDialog(null, "You cannot hold the dice when it is CPU's turn!");
+                    return;
+                }
+                controller.toggleDice(List.of(index));
+                updateDicePanel();
+            }
+        });
+    
+        return label;
     }
+    
+    
 
-    public void updateScore(int rowIndex, int columnIndex, String value) {
-        tableModel.setValueAt(value, rowIndex, columnIndex); // Update the score in the table
-    }
 
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(null, message); // Show a message dialog
+    private static void updateScores() {
+        Map<String, Integer> playerScores = controller.getPlayerScores();
+        List<Player> players = controller.getPlayers();
+    
+        // Update the table
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            int columnIndex = i + 1; // Player's column index
+            String playerName = player.getName();
+            Integer totalScore = playerScores.getOrDefault(playerName, 0); // Default to 0 if not found
+    
+            // Populate scores for each category
+            for (ScoreCategory category : ScoreCategory.values()) {
+                int rowIndex = category.ordinal() + 1; // Row index for the category
+                Integer score = controller.getCategoryScoreForPlayer(playerName, category);
+                tableModel.setValueAt(score != null ? score : "-", rowIndex, columnIndex);
+            }
+    
+            // Update total score in the last row
+            int totalRowIndex = ScoreCategory.values().length + 1;
+            tableModel.setValueAt(totalScore, totalRowIndex, columnIndex);
+        }
     }
+    
 
-    public String showInputDialog(String message, String[] options) {
-        return (String) JOptionPane.showInputDialog(
-                null,
-                message,
-                "Input",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]
-        ); // Show input dialog and return selected option
+    private static void displayPotentialScores() {
+        String currentPlayerName = controller.getCurrentPlayerName(); // Get the current player's name
+    
+        if (!controller.hasPlayerRolled(currentPlayerName)) {
+            System.out.println("Dice have not been rolled yet. Skipping potential scores update.");
+            return; // Skip updating scores if dice haven't been rolled
+        }
+    
+        Map<ScoreCategory, Integer> potentialScores = controller.getPotentialScores(currentPlayerName); // Fetch potential scores
+        int columnIndex = controller.getCurrentPlayerIndex() + 1; // Current player's column index
+    
+        for (Map.Entry<ScoreCategory, Integer> entry : potentialScores.entrySet()) {
+            ScoreCategory category = entry.getKey();
+            Integer score = entry.getValue();
+            tableModel.setValueAt(score != null ? score : "-", category.ordinal() + 1, columnIndex);
+        }
+    
+        tableModel.fireTableDataChanged(); // Notify the table to refresh
     }
+    
+    
+    
+    
 
     // Initialize players list
     private int initializePlayers(JFrame frame) {
@@ -240,13 +358,85 @@ public class YahtzeeGUI {
         }
     }
 
-    // // Method to get the players list (so controller can access it)
-    // public List<Player> getPlayers() {
-    //     return players;  // Return the players list
-    // }
-
-    // This method returns the list of player names from the controller
-    public List<String> getPlayerNames() {
-        return controller.getPlayerNames();  // Retrieve player names from the controller
+    private static void moveToNextPlayer() {
+        controller.advanceToNextPlayer(); // Advance to the next player in the controller
+    
+        String nextPlayerName = controller.getCurrentPlayerName(); // Fetch the next player's name
+        JOptionPane.showMessageDialog(null, "It's now " + nextPlayerName + "'s turn!");
+        
+        updateDicePanel(); // Refresh the dice display
+        updateScores(); // Update the scorecard with the new player's scores
+        displayPotentialScores(); // Show potential scores for the new player
+        
+        if (nextPlayerName == "CPU") {
+        	rollButton.setEnabled(false);
+        	rollButton.setEnabled(false);
+        	
+        	cpuTurn();
+        }
+        else {
+            rollButton.setEnabled(true); // Enable rolling for the new player
+            chooseScoreButton.setEnabled(false); // Disable choosing score until they roll
+            hideDicePanel();
+        }
+        
+        
+        
+        
     }
+    
+    private static void cpuTurn() {
+    	ScoreCategory aim = controller.getCpuAim();
+		updateDicePanel(); // Refresh the dice display
+        updateScores(); // Update the scorecard with the new player's scores
+        displayPotentialScores(); // Show potential scores for the new player
+        System.out.println("aiming for: " +aim);
+
+        // ResultHolder is used because actionPerformed does not allow a
+        // non final immutable object to be modified
+        ScoreCategory[] resultHolder = new ScoreCategory[1];
+        resultHolder[0] = null;
+        
+        Timer timer = new Timer(1500, null); 
+        
+    	ActionListener decisions = new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+
+    			
+    			System.out.println(controller.getCurrentPlayerName());
+    			if (resultHolder[0] == null) {
+    				resultHolder[0] = controller.iterateCpuChoices(aim);
+        			updateDicePanel(); // Refresh the dice display
+        	        updateScores(); // Update the scorecard with the new player's scores
+        	        displayPotentialScores(); // Show potential scores for the new player
+    			}
+    			else {
+    				controller.chooseScore(resultHolder[0]);
+    				timer.stop();
+    				JOptionPane.showMessageDialog(null, "CPU scored in " + resultHolder[0]);
+    				
+        			updateDicePanel(); // Refresh the dice display
+        	        updateScores(); // Update the scorecard with the new player's scores
+        	        displayPotentialScores(); // Show potential scores for the new player
+        	        
+        	        moveToNextPlayer();
+        	        
+    			}
+
+    		}
+    	};
+    	 
+    	timer.addActionListener(decisions);
+    	timer.start();
+    	
+    }
+    
+    
+    
+    
+
+    
+
 }
+
+
