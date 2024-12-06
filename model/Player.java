@@ -16,6 +16,18 @@ public class Player implements Comparable<Player> {
     private List<Dice> dice;
     private int rollsLeft;
     private Scorecard scoreCard;
+    private boolean hasRolled; // flag
+
+    public Player() {
+        this.name = "Player";
+        dice = new ArrayList<>();
+        rollsLeft = MAX_ROLLS;
+        for (int i = 0; i < NUM_DICE; i++) {
+            dice.add(Dice.get(i));
+        }
+        scoreCard = new Scorecard();
+        resetGame();
+    }
 
     public Player(String name) {
         this.name = name;
@@ -27,6 +39,11 @@ public class Player implements Comparable<Player> {
         scoreCard = new Scorecard();
         resetGame();
     }
+
+    public boolean hasRolled() {
+        return hasRolled;
+    }
+
 
     /**
      * returns the name of the player
@@ -46,6 +63,7 @@ public class Player implements Comparable<Player> {
                 die.roll();
             }
             rollsLeft--;
+            hasRolled = true; 
             return true; // successfull roll
         }
         return false; // no rolls left
@@ -78,22 +96,21 @@ public class Player implements Comparable<Player> {
      * Converts the current dice values into an array of integers.
      * @return an array representing the values of the dice (1-6).
      */
-    protected int[] getDiceValues() {
+    public int[] getDiceValues() {
         int[] values = new int[dice.size()];
         for (int i = 0; i < dice.size(); i++) {
             values[i] = dice.get(i).getFaceVal(); // Convert DiceValue to 1-6
         }
         return values;
     }
-    
+
     /**
      * Calculates score of current dice hand in the ScoreCard under a certain category
      * @param category - category to calculate
      * @return Integer representing score
      */
-    protected int calculateScoreForCategory(ScoreCategory category) {
+    public int calculateScoreForCategory(ScoreCategory category) {
     	return scoreCard.calculateScoreForCategory(category, getDiceValues());
-    	
     }
     
     /**
@@ -105,6 +122,9 @@ public class Player implements Comparable<Player> {
     	return (scoreCard.getScoreForCategory(category) != null);
     	
     }
+    
+    
+    
 
     /**
      * Resets the player's game state, including rolls left, dice hold states, and scorecard.
@@ -130,6 +150,7 @@ public class Player implements Comparable<Player> {
     public void resetTurn() {
         // Reset the rolls left for the player
          rollsLeft = MAX_ROLLS;
+         hasRolled = false;
  
          // Reset the dice: unhold all dice
          for (Dice die : dice) {
@@ -177,7 +198,7 @@ public class Player implements Comparable<Player> {
      * @param category - the score category to retrieve.
      * @return the score for the specified category, or null if it hasn't been scored.
      */
-    public int getScoreForCategory(ScoreCategory category) {
+    public Integer getScoreForCategory(ScoreCategory category) {
         return scoreCard.getScoreForCategory(category);
     }
 
@@ -195,8 +216,20 @@ public class Player implements Comparable<Player> {
      * @return - a negative integer, zero, or a positive integer as this player's score 
      * is less than, equal to, or greater than the other player's score.
      */
+    @Override
     public int compareTo(Player other) {
         return this.getTotalScore() - other.getTotalScore();
     }
+
+    
+    public List<String> getDiceFacesAsStrings() {
+        List<String> faces = new ArrayList<String>();
+        for (DiceValue face : getDiceFaces()) {
+            faces.add(face.name()); // Convert DiceValue to its string name
+        }
+        return faces;
+    }
+    
+    
 
 }
