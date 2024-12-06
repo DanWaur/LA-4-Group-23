@@ -61,6 +61,12 @@ public class YahtzeeGUI {
         String[] headers = createScorecardHeaders();
         int rows = ScoreCategory.values().length + 2; // Categories + totals
         Object[][] data = new Object[rows][headers.length]; // Ensure rows match
+        int i = 1;
+        for (ScoreCategory cat : ScoreCategory.values()) {
+            data[i][0] = cat;
+            i++;
+        }
+        data[i][0] = "Total score";
         
         tableModel = new DefaultTableModel(data, headers) {
             @Override
