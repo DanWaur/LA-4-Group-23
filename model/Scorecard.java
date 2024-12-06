@@ -91,8 +91,6 @@ public class Scorecard {
     }
 
 
-    
-
     /**
      * Calculates the score for a given category
      * @param category - the category to calculate the score for

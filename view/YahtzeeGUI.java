@@ -1,66 +1,252 @@
 package view;
-import javax.swing.*;
+
+import controller.YahtzeeController;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import model.Player;
+import model.ScoreCategory;
 
 public class YahtzeeGUI {
 
+    public JTable scorecardTable;
+    private DefaultTableModel tableModel;
+    private JPanel dicePanel;
+    private JButton rollButton;
+    private YahtzeeController controller;
+    private int playerCount;
+    private boolean hasCPU;
+
     public static void main(String[] args) {
-    	
-    	JFrame frame = new JFrame("Yahtzee");
-    	
-    	frame.setSize(800,600);
+        SwingUtilities.invokeLater(() -> {
+            YahtzeeGUI gui = new YahtzeeGUI();
+            gui.setupGame();
+        });
+    }
+
+    private void setupGame() {
+        JFrame frame = createMainFrame();
+
+        try {
+            // Initialize players
+            playerCount = initializePlayers(frame);
+
+            // Initialize the controller and pass YahtzeeGUI
+            controller = new YahtzeeController(playerCount, hasCPU);
+            // controller.initializeGame(frame);
+
+            // Set up the UI layout with scorecard, dice panel, and command panel
+            frame.add(createScorecardPanel(controller.getPlayerNames()), BorderLayout.WEST);
+            frame.add(createDicePanel(), BorderLayout.CENTER);
+            frame.add(createCommandPanel(), BorderLayout.SOUTH);
+
+            frame.setVisible(true);
+        } catch (IllegalStateException e) {
+            System.exit(0); // Exit if game setup fails
+        }
+    }
+
+    private JLabel createDiceLabel(String face, boolean isHeld, int index) {
+        String diceImagePath = "resources/dice-" + face + ".png"; // Path to dice image
+        ImageIcon diceIcon = new ImageIcon(new ImageIcon(diceImagePath).getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH));
+        JLabel diceLabel = new JLabel(diceIcon, SwingConstants.CENTER);
+        
+        // Add a red border if the die is held (we will make this look better)
+        if (isHeld) {
+            diceLabel.setBorder(BorderFactory.createLineBorder(Color.RED, 3));  // Red border for held dice
+        } 
+        
+        // Add mouse listener to toggle the dice hold state
+        diceLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+    
+                // Toggle the dice state and update the display
+                controller.handleToggleDice(index);
+                // updateDiceDisplay(null);
+            }
+        });
+        
+        return diceLabel;
+    }
+    
+
+    private JFrame createMainFrame() {
+        JFrame frame = new JFrame("Yahtzee");
+        frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        
-        frame.setVisible(true);
-        
-        // Exit if no input
-        if(!playerPrompts(frame)) {
-        	System.exit(0);
+
+        JLabel titleLabel = new JLabel("Yahtzee", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Calibri", Font.BOLD, 24));
+        frame.add(titleLabel, BorderLayout.NORTH);
+
+        return frame;
+    }
+
+    private JPanel createScorecardPanel(List<String> playerNames) {
+        JPanel scorecardPanel = new JPanel(new BorderLayout());
+        String[] scorecardColumnHeaders = createScorecardHeaders(playerNames);
+        Object[][] scorecardData = createScorecardData();
+    
+        tableModel = new DefaultTableModel(scorecardData, scorecardColumnHeaders) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Disable editing in the scorecard table
+            }
+        };
+        scorecardTable = new JTable(tableModel);
+        scorecardPanel.add(new JScrollPane(scorecardTable), BorderLayout.CENTER);
+    
+        return scorecardPanel;
+    }
+    
+
+    private String[] createScorecardHeaders(List<String> playerNames) {
+        String[] headers = new String[playerNames.size() + 1];
+        headers[0] = "Category"; // First column is for the score categories
+        for (int i = 0; i < playerNames.size(); i++) {
+            headers[i + 1] = playerNames.get(i); // Add player names as column headers
         }
+        return headers;
+    }
+
+    private Object[][] createScorecardData() {
+        Object[][] data = new Object[ScoreCategory.values().length + 1][2];
+        data[0][0] = "Total"; // Header row for total score
+        for (int i = 0; i < ScoreCategory.values().length; i++) {
+            data[i + 1][0] = ScoreCategory.values()[i].name(); // List score categories
+        }
+        return data;
+    }
+
+    private JPanel createDicePanel() {
+        dicePanel = new JPanel(new GridLayout(1, 5, 10, 10)); // Panel to hold dice
+        dicePanel.setBackground(Color.LIGHT_GRAY);
+        return dicePanel;
+    }
+
+    private JPanel createCommandPanel() {
+        JPanel panel = new JPanel();
+
+        rollButton = new JButton("Roll Dice");
+        rollButton.addActionListener(e -> controller.handleRollDice()); // Button to roll dice
+        panel.add(rollButton);
+
+        JButton chooseScoreButton = new JButton("Choose Score");
+        chooseScoreButton.addActionListener(e -> controller.handleChooseScore()); // Button to choose score
+        panel.add(chooseScoreButton);
+
+        return panel;
+    }
+
+    public void updateDiceDisplay(Player player) {
+        dicePanel.removeAll(); // Clear current dice display
+        List<String> diceFaces = player.getDiceFacesAsStrings();
+        List<Boolean> diceHolds = player.getDiceHoldStates();
+    
+        // Update dice display for each die
+        for (int i = 0; i < diceFaces.size(); i++) {
+            JLabel diceLabel;
+            if (diceFaces.get(i) == null) {
+                diceLabel = new JLabel(new ImageIcon("resources/dice-ONE.png"), SwingConstants.CENTER); // Placeholder for unset dice
+            } else {
+                diceLabel = createDiceLabel(diceFaces.get(i), diceHolds.get(i), i); // Create label for dice
+            }
+            dicePanel.add(diceLabel);
+            
+        }
+    
+        dicePanel.revalidate(); // Refresh dice panel
+        dicePanel.repaint(); // Repaint the panel to show updates
+    }
+
+    public void updateScore(int rowIndex, int columnIndex, String value) {
+        tableModel.setValueAt(value, rowIndex, columnIndex); // Update the score in the table
+    }
+
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(null, message); // Show a message dialog
+    }
+
+    public String showInputDialog(String message, String[] options) {
+        return (String) JOptionPane.showInputDialog(
+                null,
+                message,
+                "Input",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        ); // Show input dialog and return selected option
+    }
+
+    // Initialize players list
+    private int initializePlayers(JFrame frame) {
+        // prompt for cpu first, no need to prompt number of players if it'll be irrelevant
+        boolean cpuBool = promptForBool(frame, "Will this game have a CPU player?");
+        this.hasCPU = cpuBool;
+        if (this.hasCPU) {
+            return 2; // we know if it's a CPU game, we can return that there's 2 players
+        }
+
+
+        int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
+        if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled."); 
         
-        // Title of Game at top of screen
-        JLabel title = new JLabel("YAHTZEE", SwingConstants.CENTER);
-        title.setForeground(Color.red);
-        title.setFont(new Font("Calibri", Font.BOLD, 28));
-        frame.add(title, BorderLayout.NORTH);
-    	
+        return numPlayers;
     }
-    
-    
-    
-    
-    /** Prompts user for number of players and computers
-     * 
-     * @param frame - gui main JFrame
-     * @return true if input was given by user, false if input was cancelled or null
-     */
-    public static boolean playerPrompts(JFrame frame) {
-    	String[] playerOptions = {"2","3","4"};
-    	String numPlayerInput = (String) JOptionPane.showInputDialog(null, "Select the Number of Players: ", 
-    			"Players", JOptionPane.QUESTION_MESSAGE, null, playerOptions, playerOptions[0]);
-    	if (numPlayerInput == null) {
-    		return false;
-    	}
-    	int numPlayers = Integer.parseInt(numPlayerInput);
-    	
-    	String[] computerOptions = {"1","2","3"};
-    	String[] comSelectable = Arrays.copyOf(computerOptions, computerOptions.length - (4-numPlayers));
-    	String numComputerInput = (String) JOptionPane.showInputDialog(null, "Select the Number of Computers out of the "+numPlayerInput+" players: ", 
-    			"Players", JOptionPane.QUESTION_MESSAGE, null, comSelectable, comSelectable[0]);
-    	if (numComputerInput == null) {
-    		return false;
-    	}
-    	int numComputers = Integer.parseInt(numComputerInput);
-    	
-    	return true;
-    	
+
+    private boolean promptForBool(JFrame frame, String message) {
+        int input = JOptionPane.showOptionDialog(
+            frame, 
+            message, 
+            "Add CPU player?", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            null, 
+            1);
+        return input == 0; // default boolean returned should be false (for no)
     }
+
+    private int promptForNumber(JFrame frame, String message, int min, int max) {
+        // Create an array of options based on the range from min to max
+        int range = max - min + 1;  // Calculate the total number of options
+        String[] options = new String[range];  // Initialize the options array with the size of the range
     
+        // Fill the options array with numbers from min to max
+        for (int i = 0; i < range; i++) {
+            options[i] = String.valueOf(min + i); // Convert each number to a String
+        }
     
+        // Show the input dialog with the options
+        String input = (String) JOptionPane.showInputDialog(
+            frame,                
+            message,             
+            "Select Number",      
+            JOptionPane.QUESTION_MESSAGE,  
+            null,                
+            options,              
+            options[0]           
+        );
+    
+        // If input is null (i.e., user canceled), return -1; otherwise, return the selected number
+        if (input == null) {
+            return -1;  // User canceled
+        } else {
+            return Integer.parseInt(input);  // Parse and return the selected number
+        }
+    }
+
+    // // Method to get the players list (so controller can access it)
+    // public List<Player> getPlayers() {
+    //     return players;  // Return the players list
+    // }
+
+    // This method returns the list of player names from the controller
+    public List<String> getPlayerNames() {
+        return controller.getPlayerNames();  // Retrieve player names from the controller
+    }
 }

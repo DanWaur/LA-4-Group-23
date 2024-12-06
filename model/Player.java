@@ -44,7 +44,6 @@ public class Player implements Comparable<Player> {
         return hasRolled;
     }
 
-
     /**
      * returns the name of the player
      * @return - the name of the player
@@ -122,9 +121,18 @@ public class Player implements Comparable<Player> {
     	return (scoreCard.getScoreForCategory(category) != null);
     	
     }
-    
-    
-    
+  
+    public void resetRolls() {
+        this.rollsLeft = MAX_ROLLS; 
+    }
+
+    public void resetDice() {
+        // Reset each die to its default state
+        for (Dice die : dice) {
+            die.roll(); // Optionally set a default value, or keep the last rolled value
+            die.setHold(false); // Ensure the die is not held
+        }
+    }
 
     /**
      * Resets the player's game state, including rolls left, dice hold states, and scorecard.
@@ -220,7 +228,6 @@ public class Player implements Comparable<Player> {
     public int compareTo(Player other) {
         return this.getTotalScore() - other.getTotalScore();
     }
-
     
     public List<String> getDiceFacesAsStrings() {
         List<String> faces = new ArrayList<String>();
