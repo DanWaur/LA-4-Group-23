@@ -10,12 +10,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import model.DiceValue;
 import model.Player;
 import model.ScoreCategory;
 
 public class TestPlayer {
 	
 	Player player = new Player("P1");
+	Player playerDef = new Player();
 	
 	@Test
 	public void testGetName() {
@@ -24,10 +26,15 @@ public class TestPlayer {
 	
 	@Test
 	public void testRollDice() {
+		
+		assertFalse(player.hasRolled());
+		
 		assertTrue(player.rollDice());
 		assertTrue(player.rollDice());
 		assertTrue(player.rollDice());
 		assertFalse(player.rollDice());
+		
+		assertTrue(player.hasRolled());
 	}
 	
 	@Test
@@ -73,22 +80,6 @@ public class TestPlayer {
 		assertTrue(player.chooseScore(ScoreCategory.FOUR_OF_A_KIND));
 	}
 	
-	@Test
-	public void testResetTurn() {
-		List<Integer> dicePositions = new ArrayList<>();
-		dicePositions.add(0);
-		dicePositions.add(3);
-		
-		player.rollDice();
-		player.rollDice();
-		player.toggleDice(dicePositions);
-		
-		player.rollDice();
-		
-		player.resetTurn();
-		
-		assertTrue(player.rollDice());
-	}
 	
 	@Test
 	public void testRollsLeft() {
@@ -124,6 +115,75 @@ public class TestPlayer {
 		Player p2 = new Player("P2");
 		p2.chooseScore(ScoreCategory.CHANCE);
 		assertTrue(player.compareTo(p2) < 0);
+	}
+	
+	@Test
+	public void testSetRolled() {
+		Player p2 = new Player("P2");
+		p2.chooseScore(ScoreCategory.CHANCE);
+		assertTrue(player.compareTo(p2) < 0);
+	}
+	
+	@Test
+	public void testScoreCheck() {
+		
+		int x = player.calculateScoreForCategory(ScoreCategory.YAHTZEE);
+		assertTrue(x == 0 || x == 50);
+		
+		assertFalse(player.isScored(ScoreCategory.YAHTZEE));
+		assertTrue(player.chooseScore(ScoreCategory.YAHTZEE));
+		assertTrue(player.isScored(ScoreCategory.YAHTZEE));
+		
+
+	}
+	
+	@Test
+	public void testGetFacesString() {
+		
+		
+		player.rollDice();
+		List<String> faces = player.getDiceFacesAsStrings();
+		
+		assertEquals(5, faces.size());
+		
+		String first = faces.get(0);
+		
+		assertTrue(DiceValue.valueOf(first) != null);
+		
+
+	}
+	
+	@Test
+	public void testResetTurn() {
+		
+		assertTrue(player.rollDice());
+		assertTrue(player.rollDice());
+		
+		
+		List<Integer> toggle = new ArrayList<Integer>();
+		toggle.add(0);
+		toggle.add(1);
+		
+		player.toggleDice(toggle);
+		assertTrue(player.getDiceHoldStates().get(0));
+		assertTrue(player.getDiceHoldStates().get(1));
+		assertFalse(player.getDiceHoldStates().get(2));
+		assertFalse(player.getDiceHoldStates().get(3));
+		assertFalse(player.getDiceHoldStates().get(4));
+		
+		assertTrue(player.rollDice());
+		assertFalse(player.rollDice());
+		
+		player.resetTurn();
+		
+		assertTrue(player.rollDice());
+		assertFalse(player.getDiceHoldStates().get(0));
+		assertFalse(player.getDiceHoldStates().get(1));
+		assertFalse(player.getDiceHoldStates().get(2));
+		assertFalse(player.getDiceHoldStates().get(3));
+		assertFalse(player.getDiceHoldStates().get(4));
+		
+
 	}
 
 }
