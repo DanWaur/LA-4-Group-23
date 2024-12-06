@@ -68,32 +68,52 @@ public class YahtzeeGame {
     }
 
     /**
-     * Scores a category for the current player and advances the game state.
+     * Scores a category for the current player
      * @param scoreChoice - the category to score.
      * @pre scoreChoice can be null for the CPU player, will be ignored
      * @return true if the score was recorded successfully, false if the category was already scored.
      */
     public boolean chooseScore(ScoreCategory scoreChoice) {
-        if (isCurrentPlayerCPU()) {
-            Cpu cpu = getCPU();
-            scoreChoice = cpu.firstRoll();
-            boolean result = cpu.makeDecision(scoreChoice);
-        	while (result) {
-        		result = cpu.makeDecision(scoreChoice);
-        	}
-            advanceTurn(); // move to the next player (or round)
-            return true; // scored successfully
-        }
 
         Player currentPlayer = getCurrentPlayer(); 
         if (!currentPlayer.hasRolled()) {
             return false; // dice unrolled
         }
         if (currentPlayer.chooseScore(scoreChoice)) {
-            advanceTurn(); // move to the next player (or round)
             return true; // scored successfully
         }
         return false; // category already scored
+    }
+    
+    
+    public ScoreCategory getCpuAim() {
+    	if (!isCurrentPlayerCPU()) {
+    		return null;
+    	}
+    	
+    	Cpu cpu = (Cpu) getCurrentPlayer();
+    	
+    	if (!cpu.hasRolled()) {
+    		return cpu.firstRoll();
+    	}
+    	else {
+    		return null;
+    	}
+    }
+    
+    public ScoreCategory iterateCpuChoices(ScoreCategory aim) {
+    	if (!isCurrentPlayerCPU()) {
+    		return null;
+    	}
+    	
+    	Cpu cpu = (Cpu) getCurrentPlayer();
+
+
+    	ScoreCategory result = cpu.makeDecision(aim);
+    	
+    	
+    	return result;
+    	
     }
 
 
@@ -101,32 +121,38 @@ public class YahtzeeGame {
      * helper method to get the current player
      * @return the current player
      */
-    private Player getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return players.get(currentPlayerIndex);
     }
 
-    /**
-     * helper method to get the CPU player only used when it's the CPU's turn
-     * @return the CPU player
-     */
-    private Cpu getCPU() {
-        return (Cpu) players.get(currentPlayerIndex);
-    }
+//    /**
+//     * helper method to get the CPU player only used when it's the CPU's turn
+//     * @return the CPU player
+//     */
+//    private Cpu getCPU() {
+//        return (Cpu) players.get(currentPlayerIndex);
+//    }
 
     /**
      * helper method to advance the current turn to the next player, possibly next round
      * @post currentPlayerIndex will be incremented by 1 or reset to 0 if it reaches the last player
      * @post currentRound will be incremented by 1 if it reaches the last player
      */
-    private void advanceTurn() {
+
+    //  double check this, made this public
+    public void advanceTurn() {
+        getCurrentPlayer().resetTurn();
+        
         currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0; // loop back to the first player
-            currentRound++; // advance to the next round
+            
         }
         if (currentRound <= MAX_ROUNDS) {
             getCurrentPlayer().resetTurn(); // Reset dice and rolls for the next player
         }
+        
+        currentRound++; // advance to the next round
     }
 
     /**
@@ -180,5 +206,127 @@ public class YahtzeeGame {
     public boolean isCurrentPlayerCPU() {
         return players.get(currentPlayerIndex).getClass() == Cpu.class;
     }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public Integer getCategoryScoreForPlayer(String playerName, ScoreCategory category) {
+        for (Player player : players) {
+            if (player.getName().equals(playerName)) {
+                return player.getScoreForCategory(category); // Use Player's method to get the category score
+            }
+        }
+        return null; // Return null if the player or category is not found
+    }
+
+    public List<String> getSelectableCategories(String playerName) {
+        Player player = null;
+        for (Player p : players) {
+            if (p.getName().equals(playerName)) {
+                player = p;
+                break;
+            }
+        }
+    
+        if (player == null) {
+            throw new IllegalArgumentException("Player not found: " + playerName);
+        }
+    
+        List<String> selectableCategories = new ArrayList<>();
+        for (ScoreCategory category : ScoreCategory.values()) {
+            if (!player.isScored(category)) { // Check if the category is already scored
+                int potentialScore = player.calculateScoreForCategory(category);
+                selectableCategories.add(category.name() + " (" + potentialScore + ")");
+            }
+        }
+        return selectableCategories;
+    }
+    
+    public boolean scoreCategoryForPlayer(String playerName, ScoreCategory category) {
+        Player player = null;
+        for (Player p : players) {
+            if (p.getName().equals(playerName)) {
+                player = p;
+                break;
+            }
+        }
+    
+        if (player == null) {
+            throw new IllegalArgumentException("Player not found: " + playerName);
+        }
+    
+        // return player.scoreCategory(category); // Use the existing method to score the category
+        return player.chooseScore(category);
+    }
+    
+    
+
+
+    public String getCurrentPlayerName() {
+        return getCurrentPlayer().getName();
+    }
+
+//    public int getNumberOfPlayers() {
+//        return players.size();
+//    }
+//
+//    public String getPlayerName(int index) {
+//        return players.get(index).getName();
+//    }
+//    
+
+    private Player getPlayerByName(String playerName) {
+        for (Player player : players) {
+            if (player.getName().equals(playerName)) {
+                return player;
+            }
+        }
+        return null; // Player not found
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+    
+    
+    public boolean hasPlayerRolled(String playerName) {
+        Player player = getPlayerByName(playerName);
+        return player != null && player.hasRolled(); // Ensure player exists and has rolled
+    }
+
+
+    public Map<ScoreCategory, Integer> calculatePotentialScoresForPlayer(String playerName) {
+        Player player = getPlayerByName(playerName);
+        if (player == null) {
+            throw new IllegalArgumentException("Player not found: " + playerName);
+        }
+    
+        Map<ScoreCategory, Integer> potentialScores = new HashMap<>();
+        for (ScoreCategory category : ScoreCategory.values()) {
+            if (!player.isScored(category)) {
+                int score = player.calculateScoreForCategory(category);
+                potentialScores.put(category, score);
+            } else {
+                potentialScores.put(category, player.getScoreForCategory(category));
+            }
+        }
+        return potentialScores;
+    }
+    
+    
+    
+    public List<DiceValue> getCurrentPlayerDiceFaces() {
+        return getCurrentPlayer().getDiceFaces(); // Delegate to the current player's method
+    }
+    
+    public List<Boolean> getCurrentPlayerDiceHolds() {
+        return getCurrentPlayer().getDiceHoldStates(); // Delegate to the current player's method
+    }
+    
+
+    
+    
 }
+
 
