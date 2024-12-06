@@ -96,20 +96,7 @@ public class YahtzeeGUI {
     }
 
     private static JPanel createDicePanel() {
-        dicePanel = new JPanel(new GridLayout(5, 1, 5, 5));
-        JScrollPane scrollPane = new JScrollPane(scorecardTable);
-        
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(scrollPane, BorderLayout.CENTER);
-        
-        return panel;
-    }
-    
-    
-    
-
-    private static JPanel createDicePanel() {
-        dicePanel = new JPanel(new GridLayout(1, 5, 10, 10));
+        dicePanel = new JPanel(new GridLayout(5, 1, 10, 10));
         dicePanel.setBackground(Color.LIGHT_GRAY);
         return dicePanel;
     }
@@ -257,16 +244,13 @@ public class YahtzeeGUI {
                     JOptionPane.showMessageDialog(null, "You cannot hold the dice when it is CPU's turn!");
                     return;
                 }
-                controller.toggleDice(List.of(index));
+                controller.toggleDice(Collections.singletonList(index));
                 updateDicePanel();
             }
         });
     
         return label;
     }
-    
-    
-
 
     private static void updateScores() {
         Map<String, Integer> playerScores = controller.getPlayerScores();
