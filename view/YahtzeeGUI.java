@@ -8,8 +8,19 @@ import java.util.Map;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import model.DiceValue;
+import model.DiceValue;
 import model.Player;
 import model.ScoreCategory;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.Timer;
 
 public class YahtzeeGUI {
 
@@ -86,6 +97,19 @@ public class YahtzeeGUI {
 
     private static JPanel createDicePanel() {
         dicePanel = new JPanel(new GridLayout(5, 1, 5, 5));
+        JScrollPane scrollPane = new JScrollPane(scorecardTable);
+        
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(scrollPane, BorderLayout.CENTER);
+        
+        return panel;
+    }
+    
+    
+    
+
+    private static JPanel createDicePanel() {
+        dicePanel = new JPanel(new GridLayout(1, 5, 10, 10));
         dicePanel.setBackground(Color.LIGHT_GRAY);
         return dicePanel;
     }
@@ -177,14 +201,20 @@ public class YahtzeeGUI {
             JOptionPane.showMessageDialog(null, "Category already scored!");
         }
     }
+    
+    
+
+    
+
+    
 
     private static void updateDicePanel() {
         dicePanel.removeAll(); // Clear existing dice labels from the panel
-    
+
         // Get the current player's dice information from the controller
         List<DiceValue> diceFaces = controller.getCurrentDiceFaces(); // Retrieve dice faces via the controller
         List<Boolean> diceHolds = controller.getCurrentDiceHolds();   // Retrieve dice hold states via the controller
-    
+
         for (int i = 0; i < diceFaces.size(); i++) {
             JLabel diceLabel;
             if (diceFaces.get(i) == null) {
@@ -194,12 +224,15 @@ public class YahtzeeGUI {
                 // Create a label for the dice face and hold state
                 diceLabel = createDiceLabel(diceFaces.get(i), diceHolds.get(i), i);
             }
-    
             dicePanel.add(diceLabel); // Add the label to the panel
         }
-    
+
         dicePanel.revalidate(); // Refresh the layout
         dicePanel.repaint();    // Repaint the panel    
+    }
+    
+    private static void hideDicePanel() {
+        dicePanel.removeAll(); // Clear existing dice labels from the panel
     }
 
 
@@ -220,13 +253,20 @@ public class YahtzeeGUI {
                     JOptionPane.showMessageDialog(null, "You must roll the dice before toggling!");
                     return;
                 }
-                controller.toggleDice(Collections.singletonList(index));
+                if (controller.getCurrentPlayerName() == "CPU") {
+                    JOptionPane.showMessageDialog(null, "You cannot hold the dice when it is CPU's turn!");
+                    return;
+                }
+                controller.toggleDice(List.of(index));
                 updateDicePanel();
             }
         });
     
         return label;
     }
+    
+    
+
 
     private static void updateScores() {
         Map<String, Integer> playerScores = controller.getPlayerScores();
@@ -272,6 +312,10 @@ public class YahtzeeGUI {
     
         tableModel.fireTableDataChanged(); // Notify the table to refresh
     }
+    
+    
+    
+    
 
     // Initialize players list
     private int initializePlayers(JFrame frame) {
@@ -336,13 +380,72 @@ public class YahtzeeGUI {
     
         String nextPlayerName = controller.getCurrentPlayerName(); // Fetch the next player's name
         JOptionPane.showMessageDialog(null, "It's now " + nextPlayerName + "'s turn!");
-    
-        rollButton.setEnabled(true); // Enable rolling for the new player
-        chooseScoreButton.setEnabled(false); // Disable choosing score until they roll
-    
+        
         updateDicePanel(); // Refresh the dice display
         updateScores(); // Update the scorecard with the new player's scores
         displayPotentialScores(); // Show potential scores for the new player
+        
+        if (nextPlayerName == "CPU") {
+        	rollButton.setEnabled(false);
+        	rollButton.setEnabled(false);
+        	
+        	cpuTurn();
+        }
+        else {
+            rollButton.setEnabled(true); // Enable rolling for the new player
+            chooseScoreButton.setEnabled(false); // Disable choosing score until they roll
+            hideDicePanel();
+        }
+        
+        
+        
+        
+    }
+    
+    private static void cpuTurn() {
+    	ScoreCategory aim = controller.getCpuAim();
+		updateDicePanel(); // Refresh the dice display
+        updateScores(); // Update the scorecard with the new player's scores
+        displayPotentialScores(); // Show potential scores for the new player
+        System.out.println("aiming for: " +aim);
+
+        // ResultHolder is used because actionPerformed does not allow a
+        // non final immutable object to be modified
+        ScoreCategory[] resultHolder = new ScoreCategory[1];
+        resultHolder[0] = null;
+        
+        Timer timer = new Timer(1500, null); 
+        
+    	ActionListener decisions = new ActionListener() {
+    		public void actionPerformed(ActionEvent event) {
+
+    			
+    			System.out.println(controller.getCurrentPlayerName());
+    			if (resultHolder[0] == null) {
+    				resultHolder[0] = controller.iterateCpuChoices(aim);
+        			updateDicePanel(); // Refresh the dice display
+        	        updateScores(); // Update the scorecard with the new player's scores
+        	        displayPotentialScores(); // Show potential scores for the new player
+    			}
+    			else {
+    				controller.chooseScore(resultHolder[0]);
+    				timer.stop();
+    				JOptionPane.showMessageDialog(null, "CPU scored in " + resultHolder[0]);
+    				
+        			updateDicePanel(); // Refresh the dice display
+        	        updateScores(); // Update the scorecard with the new player's scores
+        	        displayPotentialScores(); // Show potential scores for the new player
+        	        
+        	        moveToNextPlayer();
+        	        
+    			}
+
+    		}
+    	};
+    	 
+    	timer.addActionListener(decisions);
+    	timer.start();
+    	
     }
     
     
