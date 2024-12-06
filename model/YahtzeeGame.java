@@ -141,18 +141,13 @@ public class YahtzeeGame {
 
     //  double check this, made this public
     public void advanceTurn() {
-        getCurrentPlayer().resetTurn();
-        
         currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0; // loop back to the first player
+            currentRound++; // advance to next round
             
         }
-        if (currentRound <= MAX_ROUNDS) {
-            getCurrentPlayer().resetTurn(); // Reset dice and rolls for the next player
-        }
-        
-        currentRound++; // advance to the next round
+        getCurrentPlayer().resetTurn();
     }
 
     /**

@@ -95,6 +95,10 @@ public class TestYahtzeeGame {
     	
     	assertEquals(1, game.getCurrentPlayerIndex());
     	
+    	assertEquals(currentRound, game.getCurrentRound());
+    	
+    	game.advanceToNextPlayer();
+    	assertEquals(0, game.getCurrentPlayerIndex());
     	assertEquals(currentRound + 1, game.getCurrentRound());
     }
     

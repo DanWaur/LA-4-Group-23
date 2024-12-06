@@ -1,12 +1,11 @@
 package controller;
 
-import model.YahtzeeGame;
-import model.Cpu;
-import model.DiceValue;
-import model.ScoreCategory;
-import model.Player;
 import java.util.List;
 import java.util.Map;
+import model.DiceValue;
+import model.Player;
+import model.ScoreCategory;
+import model.YahtzeeGame;
 
 public class YahtzeeController {
     private YahtzeeGame game;
@@ -152,11 +151,5 @@ public class YahtzeeController {
     public List<Boolean> getCurrentDiceHolds() {
         return game.getCurrentPlayerDiceHolds();
     }
-
-
-    
-    
-    
-
 
 }
