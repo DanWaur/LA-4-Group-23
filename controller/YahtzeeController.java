@@ -1,122 +1,76 @@
 package controller;
 
-import model.Player;
-import model.Cpu;
-import model.ScoreCategory;
 import model.YahtzeeGame;
-import view.YahtzeeGUI;
-
-import javax.swing.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
+import model.Player;
+import model.ScoreCategory;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public class YahtzeeController {
-    private final YahtzeeGame model;
-    // private Player currentPlayer;
+    private YahtzeeGame game;
 
-    public YahtzeeController(int playerCount, boolean hasCPU) {
-        this.model = new YahtzeeGame(playerCount, hasCPU);
+    public YahtzeeController(int numPlayers, boolean cpuMode) {
+        game = new YahtzeeGame(numPlayers, cpuMode);
     }
 
-    public void handleRollDice() {
-        model.rollDice();
+    public boolean rollDice() {
+        return game.rollDice();
     }
 
-    public void handleChooseScore() {
-        boolean chooseScoreBool = model.chooseScore(null);
-        if (chooseScoreBool == false) {
-            // gui.showMessage("You must roll at least once before choosing a score.");
-            return;
-        }
-
-        // boolean scoreChosen = promptPlayerToChooseScore();
-        // if (scoreChosen) {
-        //     moveToNextPlayer();
-        // }
+    public boolean toggleDice(List<Integer> diceIndices) {
+        return game.toggleDice(diceIndices);
     }
 
-    // private void displayPotentialScores() {
-    //     int playerColumnIndex = players.indexOf(currentPlayer) + 1; // Column in the scorecard
+    public boolean chooseScore(ScoreCategory category) {
+        return game.chooseScore(category);
+    }
 
-    //     for (ScoreCategory category : ScoreCategory.values()) {
-    //         if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
-    //             int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate the score
-    //             gui.updateScore(category.ordinal() + 1, playerColumnIndex, String.valueOf(potentialScore));
-    //         }
-    //     }
-    // }
+    public Map<String, Integer> getPlayerScores() {
+        return game.getPlayerScores();
+    }
 
-    // private boolean promptPlayerToChooseScore() {
-    //     List<String> selectableCategories = new ArrayList<>();
+    public boolean isGameOver() {
+        return game.isGameOver();
+    }
 
-    //     for (ScoreCategory category : ScoreCategory.values()) {
-    //         if (currentPlayer.getScoreForCategory(category) == null) { // Check if the category is unscored
-    //             int potentialScore = currentPlayer.calculateScoreForCategory(category); // Calculate potential score
-    //             selectableCategories.add(category.name() + " (" + potentialScore + ")");
-    //         }
-    //     }
+    public int getCurrentRound() {
+        return game.getCurrentRound();
+    }
 
-    //     // here we can add end game logic (but need to make sure both players == selectableCategories.isEmpty())
-    //     if (selectableCategories.isEmpty()) {
-    //         gui.showMessage("All categories scored!");
-    //         return false;
-    //     }
-
-    //     String selected = gui.showInputDialog("Choose a scoring category:", selectableCategories.toArray(new String[0]));
-    //     if (selected == null) return false;
-
-    //     String selectedCategoryName = selected.split(" ")[0];
-    //     ScoreCategory chosenCategory = ScoreCategory.valueOf(selectedCategoryName);
-
-    //     boolean success = currentPlayer.scoreCategory(chosenCategory); // Score the chosen category
-    //     if (!success) {
-    //         gui.showMessage("This category has already been scored!");
-    //         return false;
-    //     }
-
-    //     return true;
-    // }
-
-    // private void moveToNextPlayer() {
-    //     int nextPlayerIndex = (players.indexOf(currentPlayer) + 1) % players.size();
-    //     currentPlayer = players.get(nextPlayerIndex);
-    //     currentPlayer.prepareForNextTurn();
-
-    //     gui.updateDiceDisplay(currentPlayer);
-    //     gui.showMessage("It's now Player " + (nextPlayerIndex + 1) + "'s turn!");
-    // }
-
-    // The method to toggle the dice hold state
-    public void handleToggleDice(int index) {
-        if (index < 0 || index >= 5) {
-            return; // Invalid index, just return
-        }
-
-        // Get the dice index and toggle its hold state through the Player class
-        List<Integer> dicePos = new ArrayList<>();
-        dicePos.add(index); // Add the clicked dice index to the list
-        boolean validToggle = model.toggleDice(dicePos);
-        if (validToggle == false) { // Prevent toggling if the player has not rolled yet
-            System.out.println("Cannot toggle dice before rolling.");
-            return; 
-        }
-        // // Update the dice display to reflect the change
-        // gui.updateDiceDisplay(currentPlayer);
+    public List<Player> getPlayers() {
+        return game.getPlayers();
     }
     
-    public List<String> getPlayerNames() {
-        List<String> playerNames = new ArrayList<>();
-        Set<String> playerMapKeys = model.getPlayerScores().keySet();
-        String[] players = playerMapKeys.toArray(new String[playerMapKeys.size()]);
-        for (String name : players) {
-            playerNames.add(name);
-        }
-        // for (Player player : model.getPlayerScores()) {
-        //     playerNames.add("Player " + (players.indexOf(player) + 1));
-        // }
-        return playerNames;
+    public int getPlayerScoreByIndex(int playerIndex) {
+        return game.getPlayerScore(playerIndex);
     }
+    
+
+    public Integer getCategoryScoreForPlayer(String playerName, ScoreCategory category) {
+        return game.getCategoryScoreForPlayer(playerName, category);
+    }
+    
+
+    public Object[][] getScorecardData() {
+        return game.getScorecardData();
+    }
+
+
+    public List<String> getSelectableCategories(String playerName) {
+        return game.getSelectableCategories(playerName);
+    }
+    
+    public boolean scoreCategory(String playerName, ScoreCategory category) {
+        return game.scoreCategoryForPlayer(playerName, category);
+    }
+
+    public String getCurrentPlayerName() {
+        return game.getCurrentPlayerName();
+    }
+    
+    
+    
+    
+
+
 }

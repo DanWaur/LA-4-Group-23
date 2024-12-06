@@ -101,7 +101,7 @@ public class YahtzeeGame {
      * helper method to get the current player
      * @return the current player
      */
-    private Player getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         return players.get(currentPlayerIndex);
     }
 
@@ -118,7 +118,9 @@ public class YahtzeeGame {
      * @post currentPlayerIndex will be incremented by 1 or reset to 0 if it reaches the last player
      * @post currentRound will be incremented by 1 if it reaches the last player
      */
-    private void advanceTurn() {
+
+    //  double check this, made this public
+    public void advanceTurn() {
         currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0; // loop back to the first player
@@ -177,8 +179,102 @@ public class YahtzeeGame {
      * checks if the current player is the CPU
      * @return true if the current player is the CPU, false otherwise
      */
-    public boolean isCurrentPlayerCPU() {
+    private boolean isCurrentPlayerCPU() {
         return players.get(currentPlayerIndex).getClass() == Cpu.class;
     }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public Integer getCategoryScoreForPlayer(String playerName, ScoreCategory category) {
+        for (Player player : players) {
+            if (player.getName().equals(playerName)) {
+                return player.getScoreForCategory(category); // Use Player's method to get the category score
+            }
+        }
+        return null; // Return null if the player or category is not found
+    }
+
+    public List<String> getSelectableCategories(String playerName) {
+        Player player = null;
+        for (Player p : players) {
+            if (p.getName().equals(playerName)) {
+                player = p;
+                break;
+            }
+        }
+    
+        if (player == null) {
+            throw new IllegalArgumentException("Player not found: " + playerName);
+        }
+    
+        List<String> selectableCategories = new ArrayList<>();
+        for (ScoreCategory category : ScoreCategory.values()) {
+            if (!player.isScored(category)) { // Check if the category is already scored
+                int potentialScore = player.calculateScoreForCategory(category);
+                selectableCategories.add(category.name() + " (" + potentialScore + ")");
+            }
+        }
+        return selectableCategories;
+    }
+    
+    public boolean scoreCategoryForPlayer(String playerName, ScoreCategory category) {
+        Player player = null;
+        for (Player p : players) {
+            if (p.getName().equals(playerName)) {
+                player = p;
+                break;
+            }
+        }
+    
+        if (player == null) {
+            throw new IllegalArgumentException("Player not found: " + playerName);
+        }
+    
+        return player.scoreCategory(category); // Use the existing method to score the category
+    }
+    
+    
+
+    public Object[][] getScorecardData() {
+        int numCategories = ScoreCategory.values().length;
+        int numPlayers = players.size();
+        Object[][] data = new Object[numCategories + 1][numPlayers + 1]; 
+    
+        // Header row
+        data[0][0] = "Category/Player"; // Corner cell
+        for (int col = 0; col < numPlayers; col++) {
+            data[0][col + 1] = players.get(col).getName(); // Player names
+        }
+    
+        // Fill categories and scores
+        for (int row = 0; row < numCategories; row++) {
+            ScoreCategory category = ScoreCategory.values()[row];
+            data[row + 1][0] = category.name(); // Category name
+            for (int col = 0; col < numPlayers; col++) {
+                Integer score = players.get(col).getScoreForCategory(category);
+                data[row + 1][col + 1] = (score != null) ? score : "-";
+            }
+        }
+    
+        // Fill total scores
+        data[numCategories][0] = "Total";
+        for (int col = 0; col < numPlayers; col++) {
+            data[numCategories][col + 1] = players.get(col).getTotalScore();
+        }
+    
+        return data;
+    }
+
+
+    public String getCurrentPlayerName() {
+        return getCurrentPlayer().getName();
+    }
+    
+
+    
+    
 }
+
 
