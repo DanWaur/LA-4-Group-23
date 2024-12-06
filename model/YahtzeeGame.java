@@ -121,7 +121,7 @@ public class YahtzeeGame {
 
     //  double check this, made this public
     public void advanceTurn() {
-        getCurrentPlayer().prepareForNextTurn();
+        getCurrentPlayer().resetTurn();
         
         currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
@@ -181,7 +181,7 @@ public class YahtzeeGame {
      * checks if the current player is the CPU
      * @return true if the current player is the CPU, false otherwise
      */
-    private boolean isCurrentPlayerCPU() {
+    public boolean isCurrentPlayerCPU() {
         return players.get(currentPlayerIndex).getClass() == Cpu.class;
     }
 
@@ -234,7 +234,8 @@ public class YahtzeeGame {
             throw new IllegalArgumentException("Player not found: " + playerName);
         }
     
-        return player.scoreCategory(category); // Use the existing method to score the category
+        // return player.scoreCategory(category); // Use the existing method to score the category
+        return player.chooseScore(category);
     }
     
     
