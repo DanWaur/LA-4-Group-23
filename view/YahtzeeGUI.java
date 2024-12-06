@@ -1,15 +1,15 @@
 package view;
 
 import controller.YahtzeeController;
+import java.awt.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import model.DiceValue;
 import model.Player;
 import model.ScoreCategory;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.List;
-import java.util.Map;
 
 public class YahtzeeGUI {
 
@@ -83,12 +83,9 @@ public class YahtzeeGUI {
         
         return panel;
     }
-    
-    
-    
 
     private static JPanel createDicePanel() {
-        dicePanel = new JPanel(new GridLayout(1, 5, 10, 10));
+        dicePanel = new JPanel(new GridLayout(5, 1, 5, 5));
         dicePanel.setBackground(Color.LIGHT_GRAY);
         return dicePanel;
     }
@@ -180,20 +177,14 @@ public class YahtzeeGUI {
             JOptionPane.showMessageDialog(null, "Category already scored!");
         }
     }
-    
-    
-
-    
-
-    
 
     private static void updateDicePanel() {
         dicePanel.removeAll(); // Clear existing dice labels from the panel
-
+    
         // Get the current player's dice information from the controller
         List<DiceValue> diceFaces = controller.getCurrentDiceFaces(); // Retrieve dice faces via the controller
         List<Boolean> diceHolds = controller.getCurrentDiceHolds();   // Retrieve dice hold states via the controller
-
+    
         for (int i = 0; i < diceFaces.size(); i++) {
             JLabel diceLabel;
             if (diceFaces.get(i) == null) {
@@ -203,9 +194,10 @@ public class YahtzeeGUI {
                 // Create a label for the dice face and hold state
                 diceLabel = createDiceLabel(diceFaces.get(i), diceHolds.get(i), i);
             }
+    
             dicePanel.add(diceLabel); // Add the label to the panel
         }
-
+    
         dicePanel.revalidate(); // Refresh the layout
         dicePanel.repaint();    // Repaint the panel    
     }
@@ -228,16 +220,13 @@ public class YahtzeeGUI {
                     JOptionPane.showMessageDialog(null, "You must roll the dice before toggling!");
                     return;
                 }
-                controller.toggleDice(List.of(index));
+                controller.toggleDice(Collections.singletonList(index));
                 updateDicePanel();
             }
         });
     
         return label;
     }
-    
-    
-
 
     private static void updateScores() {
         Map<String, Integer> playerScores = controller.getPlayerScores();
@@ -283,10 +272,6 @@ public class YahtzeeGUI {
     
         tableModel.fireTableDataChanged(); // Notify the table to refresh
     }
-    
-    
-    
-    
 
     // Initialize players list
     private int initializePlayers(JFrame frame) {
