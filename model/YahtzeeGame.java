@@ -57,8 +57,14 @@ public class YahtzeeGame {
      * For human players only, the CPU player will handle toggles internally.
      * @param diceIndices - a list of indices representing the dice to toggle.
      */
-    public void toggleDice(List<Integer> diceIndices) {
-        getCurrentPlayer().toggleDice(diceIndices);
+    public boolean toggleDice(List<Integer> diceIndices) {
+        Player currPlayer = getCurrentPlayer();
+        if (!currPlayer.hasRolled()) {
+            return false;
+        }
+
+        currPlayer.toggleDice(diceIndices);
+        return true;
     }
 
     /**
@@ -80,6 +86,9 @@ public class YahtzeeGame {
         }
 
         Player currentPlayer = getCurrentPlayer(); 
+        if (!currentPlayer.hasRolled()) {
+            return false; // dice unrolled
+        }
         if (currentPlayer.chooseScore(scoreChoice)) {
             advanceTurn(); // move to the next player (or round)
             return true; // scored successfully

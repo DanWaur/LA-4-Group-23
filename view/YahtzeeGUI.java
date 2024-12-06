@@ -1,14 +1,12 @@
 package view;
 
 import controller.YahtzeeController;
-import model.Player;
-import model.ScoreCategory;
-
+import java.awt.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import model.Player;
+import model.ScoreCategory;
 
 public class YahtzeeGUI {
 
@@ -17,7 +15,8 @@ public class YahtzeeGUI {
     private JPanel dicePanel;
     private JButton rollButton;
     private YahtzeeController controller;
-    private List<Player> players;
+    private int playerCount;
+    private boolean hasCPU;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -31,11 +30,11 @@ public class YahtzeeGUI {
 
         try {
             // Initialize players
-            players = initializePlayers(frame);
+            playerCount = initializePlayers(frame);
 
             // Initialize the controller and pass YahtzeeGUI
-            controller = new YahtzeeController(this);
-            controller.initializeGame(frame);
+            controller = new YahtzeeController(playerCount, hasCPU);
+            // controller.initializeGame(frame);
 
             // Set up the UI layout with scorecard, dice panel, and command panel
             frame.add(createScorecardPanel(controller.getPlayerNames()), BorderLayout.WEST);
@@ -65,6 +64,7 @@ public class YahtzeeGUI {
     
                 // Toggle the dice state and update the display
                 controller.handleToggleDice(index);
+                // updateDiceDisplay(null);
             }
         });
         
@@ -183,25 +183,32 @@ public class YahtzeeGUI {
     }
 
     // Initialize players list
-    private List<Player> initializePlayers(JFrame frame) {
-        List<Player> players = new ArrayList<>();
+    private int initializePlayers(JFrame frame) {
+        // prompt for cpu first, no need to prompt number of players if it'll be irrelevant
+        boolean cpuBool = promptForBool(frame, "Will this game have a CPU player?");
+        this.hasCPU = cpuBool;
+        if (this.hasCPU) {
+            return 2; // we know if it's a CPU game, we can return that there's 2 players
+        }
+
+
         int numPlayers = promptForNumber(frame, "Select the Number of Players:", 2, 4);
-        if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled.");
+        if (numPlayers == -1) throw new IllegalStateException("Game initialization canceled."); 
+        
+        return numPlayers;
+    }
 
-        int numCPUs = promptForNumber(frame, "Select the Number of Computers:", 0, numPlayers);
-        if (numCPUs == -1) throw new IllegalStateException("Game initialization canceled.");
-
-        // Add human players
-        for (int i = 0; i < numPlayers - numCPUs; i++) {
-            players.add(new Player()); // Add human players
-        }
-
-        // Add CPU players (if any)
-        for (int i = 0; i < numCPUs; i++) {
-            players.add(new Player()); // Add CPU players
-        }
-
-        return players;
+    private boolean promptForBool(JFrame frame, String message) {
+        int input = JOptionPane.showOptionDialog(
+            frame, 
+            message, 
+            "Add CPU player?", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.QUESTION_MESSAGE, 
+            null, 
+            null, 
+            1);
+        return input == 0; // default boolean returned should be false (for no)
     }
 
     private int promptForNumber(JFrame frame, String message, int min, int max) {
@@ -233,13 +240,10 @@ public class YahtzeeGUI {
         }
     }
 
-    // Method to get the players list (so controller can access it)
-    public List<Player> getPlayers() {
-        return players;  // Return the players list
-    }
-
-    
-    
+    // // Method to get the players list (so controller can access it)
+    // public List<Player> getPlayers() {
+    //     return players;  // Return the players list
+    // }
 
     // This method returns the list of player names from the controller
     public List<String> getPlayerNames() {
