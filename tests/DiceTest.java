@@ -1,7 +1,12 @@
+/*
+ * Juan Rogel Acedo (jarogelacedo)
+ * Daniel (dreynaldo)
+ * Marco (pena8)
+ * Devin Dinh (devdinh)
+ */
+
 package tests;
-import java.io.IOException;
 import model.Dice;
-import model.DiceValue;
 import org.junit.jupiter.api.Test;
 import static org.junit.Assert.*;
 

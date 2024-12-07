@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Test;
 
-import model.Player;
 import model.ScoreCategory;
 import model.YahtzeeGame;
 

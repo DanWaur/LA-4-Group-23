@@ -1,3 +1,10 @@
+/*
+ * Juan Rogel Acedo (jarogelacedo)
+ * Daniel (dreynaldo)
+ * Marco (pena8)
+ * Devin Dinh (devdinh)
+ */
+
 package tests;
 
 import org.junit.Test;
@@ -5,10 +12,8 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import model.Player;
 import model.Cpu;
 import model.ScoreCategory;
-import model.Scorecard;
 
 public class CpuTest {
 	
@@ -89,8 +94,7 @@ public class CpuTest {
     public void testChooseAimNone() {
     	int[] a = {1,2,3,4,5};
     	
-    	// assertEquals(ScoreCategory.LARGE_STRAIGHT, cpu.chooseAimFor(ScoreCategory.YAHTZEE, a));
-		// TODO: fix this test
+    	assertEquals(ScoreCategory.LARGE_STRAIGHT, cpu.chooseAimFor(ScoreCategory.YAHTZEE, a));
     	
     }
     
@@ -236,7 +240,7 @@ public class CpuTest {
     	int[] c = {6,6,6,5,5};
     	
     	kept = cpu.getDiceKeepForNext(ScoreCategory.CHANCE, c);
-    	assertEquals(0, kept.size());
+    	assertEquals(1, kept.size());
 	
     }
     
@@ -253,37 +257,17 @@ public class CpuTest {
     	assertEquals((Integer) 4, kept.get(4));
     }
     
-// DEBUG
-//    @Test
-//    public void testCpuGame() {
-//    	
-//    	
-//    	ScoreCategory aim = cpu.firstRoll();
-//    	for (int i = 0; i < 5; i++) {
-//    		System.out.println("Dice Value: " + cpu.getDiceFaces().get(i));
-//    	}
-//    	System.out.println("Aiming for: " + aim);
-//    	System.out.println("");
-//    	
-//    	boolean result = cpu.makeDecision(aim);
-//    	while (result != false) {
-//        	for (int i = 0; i < 5; i++) {
-//        		System.out.println("Dice Value: " + cpu.getDiceFaces().get(i));
-//        	}
-//        	System.out.println("Aiming for: " + aim);
-//        	System.out.println("");
-//
-//        	result = cpu.makeDecision(aim);
-//    	} 
-//    	
-//    	
-//    	for (int i = 0; i < 5; i++) {
-//    		System.out.println("Dice Value: " + cpu.getDiceFaces().get(i));
-//    	}
-//
-//    	
-//    }
-    
+    @Test
+    public void testKeepChance() {
+    	
+    	int[] a = {2,3,5,4,1};
+    	
+    	List<Integer> kept = cpu.getDiceKeepForNext(ScoreCategory.CHANCE, a);
+    	assertEquals(1, kept.size());
+    	assertEquals((Integer) 2, kept.get(0));		// position 2, 5 is highest
+
+
+    }
     
     @Test
     public void testCpuGame() {
@@ -291,15 +275,19 @@ public class CpuTest {
     	
     	// Run the game 13 times until all categories are filled
     	for (int i = 0; i < ScoreCategory.values().length; i++) {
-    		
+
     		// Cpu Decision per round
     		cpu.resetTurn();
         	ScoreCategory aim = cpu.firstRoll();
+
         	
-        	boolean result = cpu.makeDecision(aim);
-        	while (result != false) {
+        	ScoreCategory result = cpu.makeDecision(aim);
+        	while (result == null) {
+
         		result = cpu.makeDecision(aim);
         	}
+        	
+        	cpu.chooseScore(result);
     		
     		
     		// Count categories scored
@@ -307,7 +295,6 @@ public class CpuTest {
         	for (ScoreCategory cat : ScoreCategory.values()) {
         		if (cpu.isScored(cat)) {
         			catsScored++;
-        			System.out.println(cat);
         		}
         	}
         	

@@ -1,10 +1,8 @@
 package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import model.Dice;
-import model.DiceValue;
 import model.ScoreCategory;
 import model.Scorecard;
 

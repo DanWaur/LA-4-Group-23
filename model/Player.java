@@ -1,11 +1,11 @@
-package model;
 /*
- * Juan Rogel Acedo (jarogelacedo)
- * Daniel (netid)
- * Marco (pena8)
- * Devin Dinh (devdinh)
- */
+* Juan Rogel Acedo (jarogelacedo)
+* Daniel (netid)
+* Marco (pena8)
+* Devin Dinh (devdinh)
+*/
 
+package model;
 import java.util.ArrayList;
 import java.util.List;
 
