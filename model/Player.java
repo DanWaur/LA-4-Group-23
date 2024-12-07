@@ -16,7 +16,7 @@ public class Player implements Comparable<Player> {
     private List<Dice> dice;
     private int rollsLeft;
     private Scorecard scoreCard;
-    private boolean hasRolled; // flag
+    private boolean hasRolled;
 
     public Player() {
         this.name = "Player";
