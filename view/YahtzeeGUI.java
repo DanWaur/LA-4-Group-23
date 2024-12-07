@@ -395,10 +395,10 @@ public class YahtzeeGUI {
 	}
 
 	private static void handleGameOver() {
-		// Get winners and scores, already sorted by score in descending order
 		Map<String, Integer> playerScores = controller.getPlayerScores();
+		List<Integer> scores = new ArrayList<>(playerScores.values());
+		int highestScore = Collections.max(scores);
 		List<String> winners = new ArrayList<>();
-		int highestScore = (int) playerScores.values().toArray()[0];
 		for (Map.Entry<String, Integer> entry : playerScores.entrySet()) {
 			if (entry.getValue() == highestScore) {
 				winners.add(entry.getKey());
