@@ -47,8 +47,9 @@ public class Cpu extends Player {
      * @param aimFor is the category the cpu attempts to achieve.
      * @return true if the cpu can make another decision, false if it will not and scored in the scoreCard.
      */
-    public boolean makeDecision(ScoreCategory aimFor) {
+    public ScoreCategory makeDecision(ScoreCategory aimFor) {
 
+    	ScoreCategory toReturn;
     	
     	boolean rolled = this.rollDice();
     	
@@ -56,29 +57,30 @@ public class Cpu extends Player {
     	if (rolled == false) {
     		
     		if (this.calculateScoreForCategory(aimFor) != 0) {
-    			this.chooseScore(aimFor);
+    			toReturn = aimFor;
     		}
     		else {
     			
-    			ScoreCategory best = this.getBestScore();
-    			this.chooseScore(best);
+    			toReturn = this.getBestScore();
+
+    			
     		}
     		
     		// End of cpu turn
-    		return false;
+    		return toReturn;
     	}
     	
     	// Cpu can score in aim category, score.
     	if (this.calculateScoreForCategory(aimFor) != 0) {
-    		this.chooseScore(aimFor);
+    		toReturn = aimFor;
     		
     		// End of cpu turn
-    		return false;
+    		return toReturn;
     	}
 
     	
     	// Cpu wants to make another turn/roll
-    	return true;
+    	return null;
     }
     
 
@@ -205,6 +207,7 @@ public class Cpu extends Player {
 	        	break;
 	        	
 	        case CHANCE:
+	        	selectPos = getSingleHighest(vals);
 	        	
 	        	break;
 

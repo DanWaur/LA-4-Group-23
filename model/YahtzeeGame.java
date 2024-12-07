@@ -68,32 +68,52 @@ public class YahtzeeGame {
     }
 
     /**
-     * Scores a category for the current player and advances the game state.
+     * Scores a category for the current player
      * @param scoreChoice - the category to score.
      * @pre scoreChoice can be null for the CPU player, will be ignored
      * @return true if the score was recorded successfully, false if the category was already scored.
      */
     public boolean chooseScore(ScoreCategory scoreChoice) {
-        if (isCurrentPlayerCPU()) {
-            Cpu cpu = getCPU();
-            scoreChoice = cpu.firstRoll();
-            boolean result = cpu.makeDecision(scoreChoice);
-        	while (result) {
-        		result = cpu.makeDecision(scoreChoice);
-        	}
-            advanceTurn(); // move to the next player (or round)
-            return true; // scored successfully
-        }
 
         Player currentPlayer = getCurrentPlayer(); 
         if (!currentPlayer.hasRolled()) {
             return false; // dice unrolled
         }
         if (currentPlayer.chooseScore(scoreChoice)) {
-            advanceTurn(); // move to the next player (or round)
             return true; // scored successfully
         }
         return false; // category already scored
+    }
+    
+    
+    public ScoreCategory getCpuAim() {
+    	if (!isCurrentPlayerCPU()) {
+    		return null;
+    	}
+    	
+    	Cpu cpu = (Cpu) getCurrentPlayer();
+    	
+    	if (!cpu.hasRolled()) {
+    		return cpu.firstRoll();
+    	}
+    	else {
+    		return null;
+    	}
+    }
+    
+    public ScoreCategory iterateCpuChoices(ScoreCategory aim) {
+    	if (!isCurrentPlayerCPU()) {
+    		return null;
+    	}
+    	
+    	Cpu cpu = (Cpu) getCurrentPlayer();
+
+
+    	ScoreCategory result = cpu.makeDecision(aim);
+    	
+    	
+    	return result;
+    	
     }
 
 
@@ -105,13 +125,13 @@ public class YahtzeeGame {
         return players.get(currentPlayerIndex);
     }
 
-    /**
-     * helper method to get the CPU player only used when it's the CPU's turn
-     * @return the CPU player
-     */
-    private Cpu getCPU() {
-        return (Cpu) players.get(currentPlayerIndex);
-    }
+//    /**
+//     * helper method to get the CPU player only used when it's the CPU's turn
+//     * @return the CPU player
+//     */
+//    private Cpu getCPU() {
+//        return (Cpu) players.get(currentPlayerIndex);
+//    }
 
     /**
      * helper method to advance the current turn to the next player, possibly next round
@@ -121,16 +141,13 @@ public class YahtzeeGame {
 
     //  double check this, made this public
     public void advanceTurn() {
-        getCurrentPlayer().resetTurn();
-        
         currentPlayerIndex++;
         if (currentPlayerIndex >= players.size()) {
             currentPlayerIndex = 0; // loop back to the first player
-            currentRound++; // advance to the next round
+            currentRound++; // advance to next round
+            
         }
-        if (currentRound <= MAX_ROUNDS) {
-            getCurrentPlayer().resetTurn(); // Reset dice and rolls for the next player
-        }
+        getCurrentPlayer().resetTurn();
     }
 
     /**
@@ -245,14 +262,14 @@ public class YahtzeeGame {
         return getCurrentPlayer().getName();
     }
 
-    public int getNumberOfPlayers() {
-        return players.size();
-    }
-
-    public String getPlayerName(int index) {
-        return players.get(index).getName();
-    }
-    
+//    public int getNumberOfPlayers() {
+//        return players.size();
+//    }
+//
+//    public String getPlayerName(int index) {
+//        return players.get(index).getName();
+//    }
+//    
 
     private Player getPlayerByName(String playerName) {
         for (Player player : players) {
