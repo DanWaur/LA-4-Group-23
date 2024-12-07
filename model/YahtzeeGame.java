@@ -261,14 +261,6 @@ public class YahtzeeGame {
         return getCurrentPlayer().getName();
     }
 
-//    public int getNumberOfPlayers() {
-//        return players.size();
-//    }
-//
-//    public String getPlayerName(int index) {
-//        return players.get(index).getName();
-//    }
-//    
 
     private Player getPlayerByName(String playerName) {
         for (Player player : players) {

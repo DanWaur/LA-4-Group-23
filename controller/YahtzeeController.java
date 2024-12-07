@@ -7,6 +7,7 @@
 
 package controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import model.DiceValue;
@@ -17,146 +18,116 @@ import model.YahtzeeGame;
 public class YahtzeeController {
     private YahtzeeGame game;
 
+    // Initializes the controller with the number of players and CPU mode
     public YahtzeeController(int numPlayers, boolean cpuMode) {
         game = new YahtzeeGame(numPlayers, cpuMode);
     }
 
+    // Rolls dice for the current player
     public boolean rollDice() {
         return game.rollDice();
     }
 
+    // Toggles the hold state of selected dice
     public boolean toggleDice(List<Integer> diceIndices) {
         return game.toggleDice(diceIndices);
     }
 
+    // Scores the specified category for the current player
     public boolean chooseScore(ScoreCategory category) {
         return game.chooseScore(category);
     }
     
+    // Returns the CPU's target category for scoring
     public ScoreCategory getCpuAim() {
         return game.getCpuAim();
     }
     
+    // Simulates the CPU's choice-making process
     public ScoreCategory iterateCpuChoices(ScoreCategory aimFor) {
         return game.iterateCpuChoices(aimFor);
     }
 
+    // Retrieves the scores of all players
     public Map<String, Integer> getPlayerScores() {
         return game.getPlayerScores();
     }
 
+    // Checks if the game has ended
     public boolean isGameOver() {
         return game.isGameOver();
     }
 
+    // Gets the current round number
     public int getCurrentRound() {
         return game.getCurrentRound();
     }
 
+    // Retrieves an unmodifiable list of players to prevent escaping references
     public List<Player> getPlayers() {
-        return game.getPlayers();
+        return Collections.unmodifiableList(game.getPlayers());
     }
-    
+
+    // Gets the score of a player by their index
     public int getPlayerScoreByIndex(int playerIndex) {
         return game.getPlayerScore(playerIndex);
     }
-    
 
+    // Gets the score for a specific category for a player
     public Integer getCategoryScoreForPlayer(String playerName, ScoreCategory category) {
         return game.getCategoryScoreForPlayer(playerName, category);
     }
-    
 
-//    public Object[][] getScorecardData() {
-//        int numCategories = ScoreCategory.values().length;
-//        int numPlayers = game.getNumberOfPlayers();
-//        Object[][] data = new Object[numCategories + 1][numPlayers + 1]; // +1 for header row
-//    
-//        // Fill category rows
-//        for (int row = 0; row < numCategories; row++) {
-//            ScoreCategory category = ScoreCategory.values()[row];
-//            data[row + 1][0] = category.name(); // Category name
-//            for (int col = 0; col < numPlayers; col++) {
-//                String playerName = game.getPlayerName(col);
-//                Integer score = game.getCategoryScoreForPlayer(playerName, category);
-//                data[row + 1][col + 1] = (score != null) ? score : "-"; // Placeholder if null
-//            }
-//        }
-//    
-//        return data;
-//    }
-    
-
-    
-
+    // Retrieves the selectable categories for a player
     public List<String> getSelectableCategories(String playerName) {
         return game.getSelectableCategories(playerName);
     }
-//    
-//    public boolean scoreCategory(String playerName, ScoreCategory category) {
-//        return game.scoreCategoryForPlayer(playerName, category);
-//    }
 
+    // Returns the current player's name
     public String getCurrentPlayerName() {
         return game.getCurrentPlayerName();
     }
-    
-    
-//    public int calculateTotalScore(String playerName) {
-//        int total = 0;
-//        for (ScoreCategory category : ScoreCategory.values()) {
-//            Integer score = game.getCategoryScoreForPlayer(playerName, category);
-//            if (score != null) {
-//                total += score;
-//            }
-//        }
-//        return total;
-//    }
 
-
+    // Scores a selected category for a specific player
     public boolean scoreSelectedCategory(String playerName, String selectedCategory) {
-        
         String categoryName = selectedCategory.split(" ")[0];
         ScoreCategory category = ScoreCategory.valueOf(categoryName);
-    
-        // Delegate scoring to the game
         return game.scoreCategoryForPlayer(playerName, category);
     }
-    
-    
 
+    // Checks if a player has rolled during their turn
     public boolean hasPlayerRolled(String playerName) {
-        return game.hasPlayerRolled(playerName); // Delegate to game
+        return game.hasPlayerRolled(playerName);
     }
 
+    // Calculates the potential scores for a player based on their current dice
     public Map<ScoreCategory, Integer> getPotentialScores(String playerName) {
-        return game.calculatePotentialScoresForPlayer(playerName); // Delegate to game
+        return game.calculatePotentialScoresForPlayer(playerName);
     }
 
+    // Gets the index of the current player
     public int getCurrentPlayerIndex() {
-        return game.getCurrentPlayerIndex(); // Delegate to game
+        return game.getCurrentPlayerIndex();
     }
 
-
+    // Advances to the next player's turn
     public void advanceToNextPlayer() {
-        game.advanceTurn(); // Delegate to the model
+        game.advanceTurn();
     }
-    
-    /**
-     * checks if the current player is the CPU
-     * @return true if the current player is the CPU, false otherwise
-     */
+
+    // Checks if the current player is the CPU
     public boolean isCurrentPlayerCPU() {
         return game.isCurrentPlayerCPU();
     }
-    
 
+    // Retrieves the current player's dice faces
     public List<DiceValue> getCurrentDiceFaces() {
         return game.getCurrentPlayerDiceFaces();
     }
 
+    // Retrieves the current player's dice hold states
     public List<Boolean> getCurrentDiceHolds() {
         return game.getCurrentPlayerDiceHolds();
     }
-
 }
+ 
