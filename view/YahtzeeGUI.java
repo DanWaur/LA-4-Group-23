@@ -37,6 +37,14 @@ public class YahtzeeGUI {
 		startGame();
 	}
 
+	/**
+	 * Initializes and starts the Yahtzee game GUI.
+	 * 
+	 * GUI components include:
+	 * - Scorecard Panel: Displays scores and categories.
+	 * - Dice Panel: Displays dice for gameplay.
+	 * - Command Panel: Provides game control buttons..
+	 */
 	private static void startGame() {
 		SwingUtilities.invokeLater(() -> {
 			// Create the main frame
@@ -58,6 +66,13 @@ public class YahtzeeGUI {
 		});
 	}
 
+	/**
+	 * Creates and initializes the main JFrame for the Yahtzee application.
+	 * Frame's properties, including size, layout, and title,
+	 * and adds a title label to the frame.
+	 * 
+	 * @return the initialized JFrame instance.
+	 */
 	private static JFrame createMainFrame() {
 		JFrame frame = new JFrame("Yahtzee");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,6 +86,13 @@ public class YahtzeeGUI {
 		return frame;
 	}
 
+	/**
+	 * Creates and initializes the scorecard panel.
+	 * Generates a table with headers and rows for scoring categories, including totals.
+	 * Ensures the table is non-editable and wraps it in a scroll pane for display.
+	 * 
+	 * @return the initialized JPanel containing the scorecard table.
+	 */
 	private static JPanel createScorecardPanel() {
 		String[] headers = createScorecardHeaders();
 		int rows = ScoreCategory.values().length + 2; // Categories + totals
@@ -98,12 +120,26 @@ public class YahtzeeGUI {
 		return panel;
 	}
 
+	/**
+	 * Creates and initializes the dice panel.
+	 * Configures a grid layout with five rows and a light gray background
+	 * for displaying the dice.
+	 * 
+	 * @return the initialized JPanel for the dice display.
+	 */
 	private static JPanel createDicePanel() {
 		dicePanel = new JPanel(new GridLayout(5, 1, 10, 10));
 		dicePanel.setBackground(Color.LIGHT_GRAY);
 		return dicePanel;
 	}
 
+	/**
+	 * Creates and initializes the command panel.
+	 * Adds buttons for rolling the dice and choosing a score, with appropriate
+	 * action listeners for their functionalities.
+	 * 
+	 * @return the initialized JPanel containing the command buttons.
+	 */
 	private static JPanel createCommandPanel() {
 		JPanel panel = new JPanel();
 
@@ -121,6 +157,11 @@ public class YahtzeeGUI {
 		return panel;
 	}
 
+	/**
+	 * Handles the logic for rolling the dice during a player's turn.
+	 * Updates the dice display and calculates potential scores if rolls are available.
+	 * Displays a warning message if no rolls are left and prompts the player to choose a score.
+	 */
 	private static void handleRollDice() {
 		if (controller.rollDice()) {
 			updateDicePanel(); // Update the dice display
@@ -131,6 +172,10 @@ public class YahtzeeGUI {
 		}
 	}
 
+	/**
+	 * Creates the headers for the scorecard table dynamically.
+	 * @return an array of strings representing the column headers for the scorecard table.
+	 */
 	private static String[] createScorecardHeaders() {
 		int playerCount = controller.getPlayers().size(); // Fetch the number of players dynamically
 		String[] headers = new String[playerCount + 1];
@@ -141,6 +186,12 @@ public class YahtzeeGUI {
 		return headers;
 	}
 
+	/**
+	 * Handles the logic for selecting and scoring a category.
+	 * Ensures the player has rolled the dice at least once before scoring, and validates 
+	 * that there are selectable categories available. Prompts the player to choose a 
+	 * category, delegates the scoring process to the controller, and updates the game state.
+	 */
 	private static void handleChooseScore() {
 		if (!controller.hasPlayerRolled(controller.getCurrentPlayerName())) {
 			JOptionPane.showMessageDialog(null, "You must roll the dice at least once before choosing a score.");
@@ -181,6 +232,13 @@ public class YahtzeeGUI {
 		}
 	}
 
+	/**
+	 * Updates the dice panel to display the current player's dice values and hold states.
+	 * Clears the panel and adds new labels for each die, reflecting its face and whether it is held.
+	 * If a die has not been rolled yet, displays a placeholder image.
+	 * 
+	 * Ensures the panel layout is refreshed and repainted to reflect the updated dice state.
+	 */
 	private static void updateDicePanel() {
 		dicePanel.removeAll(); // Clear existing dice labels from the panel
 
@@ -204,10 +262,24 @@ public class YahtzeeGUI {
 		dicePanel.repaint(); // Repaint the panel
 	}
 
+	/**
+	 * Clears all dice labels from the dice panel, effectively hiding it.
+	 */
 	private static void hideDicePanel() {
 		dicePanel.removeAll(); // Clear existing dice labels from the panel
 	}
 
+	/**
+	 * Creates a JLabel representing a die with its current face value and hold state.
+	 * Displays an image corresponding to the die face and applies a red border if the die is held.
+	 * Adds a mouse listener to toggle the hold state of the die when clicked, ensuring 
+	 * the player has rolled the dice and it is not the CPU's turn before toggling.
+	 * 
+	 * @param face the face value of the die to display.
+	 * @param isHeld a boolean indicating if the die is currently held.
+	 * @param index the index of the die in the dice list, used for toggling.
+	 * @return a JLabel representing the die.
+	 */
 	private static JLabel createDiceLabel(DiceValue face, boolean isHeld, int index) {
 		String imagePath = "resources/dice-" + face.name() + ".png";
 		ImageIcon icon = new ImageIcon(
@@ -238,6 +310,12 @@ public class YahtzeeGUI {
 		return label;
 	}
 
+	/**
+	 * Updates the scores displayed in the scorecard table for all players.
+	 * Retrieves the players and their respective scores from the controller,
+	 * and populates the table with scores for each category and the total score.
+	 * 
+	 */
 	private static void updateScores() {
 		Map<String, Integer> playerScores = controller.getPlayerScores();
 		List<Player> players = controller.getPlayers();
@@ -262,6 +340,12 @@ public class YahtzeeGUI {
 		}
 	}
 
+	/**
+	 * Displays the potential scores for the current player based on their dice roll.
+	 * Fetches the potential scores for each category from the controller and updates the
+	 * scorecard table with these values. Skips the update if the dice have not been rolled.
+	 * dash ("-") if a score is not available
+	 */
 	private static void displayPotentialScores() {
 		String currentPlayerName = controller.getCurrentPlayerName(); // Get the current player's name
 
@@ -284,7 +368,15 @@ public class YahtzeeGUI {
 		tableModel.fireTableDataChanged(); // Notify the table to refresh
 	}
 
-	// Initialize players list
+	/**
+	 * Initializes the players for the Yahtzee game by prompting the user.
+	 * First, determines if the game will include a CPU player and, if so, sets the player count to 2.
+	 * If no CPU is added, prompts the user to select human players (2 to 4).
+	 * Throws an exception if the initialization process is canceled.
+	 * 
+	 * @param frame the parent frame for the prompt dialogs.
+	 * @return the number of players participating in the game.
+	 */
 	private int initializePlayers(JFrame frame) {
 		// prompt for cpu first, no need to prompt number of players if it'll be
 		// irrelevant
@@ -301,12 +393,30 @@ public class YahtzeeGUI {
 		return numPlayers;
 	}
 
+	/**
+	 * Prompts the user with a yes/no question.
+	 * Used to check if a CPU player will be added to the game.
+	 * 
+	 * @param frame the parent frame for the prompt dialog.
+	 * @param message the message displayed in the prompt dialog.
+	 * @return true if the user selects "Yes," false otherwise.
+	 */
 	private boolean promptForBool(JFrame frame, String message) {
 		int input = JOptionPane.showOptionDialog(frame, message, "Add CPU player?", JOptionPane.YES_NO_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, null, 1);
 		return input == 0; // default boolean returned should be false (for no)
 	}
 
+	/**
+	 * Prompts the user to select a number within a specified range using a dialog box.
+	 * Displays the range of numbers as options in a drop-down menu, allowing the user to choose one.
+	 * 
+	 * @param frame the parent frame for the prompt dialog.
+	 * @param message the message displayed in the dialog.
+	 * @param min the minimum number in the range of options.
+	 * @param max the maximum number in the range of options.
+	 * @return the number selected by the user, or -1 if the dialog is canceled.
+	 */
 	private int promptForNumber(JFrame frame, String message, int min, int max) {
 		// Create an array of options based on the range from min to max
 		int range = max - min + 1; // Calculate the total number of options
@@ -330,6 +440,17 @@ public class YahtzeeGUI {
 		}
 	}
 
+	/**
+	 * Advances the game to the next player's turn.
+	 * Checks if the game is over after advancing; if so, handles the end-game logic.
+	 * Otherwise, displays a message indicating the next player's turn and updates the game state:
+	 * - Refreshes the dice display and scorecard for the new player.
+	 * - Displays potential scores for the new player.
+	 * - Adjusts button states based on whether the next player is a CPU or human.
+	 * 
+	 * If the next player is the CPU, disables player interaction and starts the CPU's turn automatically.
+	 * For human players, enables the roll button and resets the dice panel.
+	 */
 	private static void moveToNextPlayer() {
 		controller.advanceToNextPlayer(); // Advance to the next player in the controller
 		
@@ -357,6 +478,16 @@ public class YahtzeeGUI {
 		}
 	}
 
+	/**
+	 * Executes the CPU player's turn in the game.
+	 * Determines the CPU's target scoring category and iteratively refines its choices
+	 * using a timer to simulate decision-making.
+	 * 
+	 * - Once finalized, the CPU selects the score category, displays a message with the chosen category,
+	 *   and updates the game state.
+	 * - Advances the game to the next player's turn after completing the CPU's actions.
+	 * 
+	 */
 	private static void cpuTurn() {
 		ScoreCategory aim = controller.getCpuAim();
 		updateDicePanel(); // Refresh the dice display
@@ -401,6 +532,15 @@ public class YahtzeeGUI {
 
 	}
 
+	/**
+	 * Handles the end of the game by determining the winner(s) and displaying the final results.
+	 * Retrieves player scores, identifies the highest score, and checks for ties.
+	 * Constructs and displays a message with the winner(s) and their score(s).
+	 * 
+	 * Prompts the user to decide Yes/No:
+	 * - If "Yes," disposes of the current game frame and restarts the game.
+	 * - If "No," exits the application.
+	 */
 	private static void handleGameOver() {
 		Map<String, Integer> playerScores = controller.getPlayerScores();
 		List<Integer> scores = new ArrayList<>(playerScores.values());
