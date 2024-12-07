@@ -1,3 +1,10 @@
+/*
+ * Juan Rogel Acedo (jarogelacedo)
+ * Daniel (dreynaldo)
+ * Marco (pena8)
+ * Devin Dinh (devdinh)
+ */
+
 package tests;
 
 import java.util.ArrayList;
